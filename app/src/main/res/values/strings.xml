@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">JustCasts</string>
     <string name="just_casts">Just Casts</string>
+    <string name="search">search</string>
+    <string name="shows">Shows</string>
+
+    <string name="listen_now">Listen Now</string>
 </resources>
