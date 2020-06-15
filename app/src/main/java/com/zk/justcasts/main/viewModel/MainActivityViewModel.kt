@@ -20,9 +20,6 @@ class MainActivityViewModel: ViewModel() {
     fun event(event: Event) {
         when (event) {
             is Event.ScreenLoad -> Log.d(TAG, "ViewModel, screen load event")
-//            is Event.TransitionToDetailFragment -> {
-//                viewAction.postValue(ViewEffect.TransitionToScreenWithElement(event.data))
-//            }
         }
     }
 }

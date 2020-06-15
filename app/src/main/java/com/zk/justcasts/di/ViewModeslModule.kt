@@ -16,7 +16,6 @@ class ViewModelsModule {
 			viewModel { SearchViewModel() }
 			viewModel { ListenNowViewModel() }
 			viewModel { ShowViewModel() }
-
 		}
 	}
 }

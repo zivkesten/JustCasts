@@ -10,11 +10,6 @@ import com.zk.justcasts.databinding.FragmentListenNowBinding
 
 class ListenNowFragment: Fragment() {
 
-    companion object {
-        @JvmStatic
-        private val TAG = ListenNowFragment::class.java.simpleName
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = MaterialFadeThrough()
@@ -27,7 +22,6 @@ class ListenNowFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentListenNowBinding.inflate(inflater, container, false)
-        //binding.listenContainer.transitionName = arguments?.getString(ARG_PARAM2)
         return binding.root
     }
 }

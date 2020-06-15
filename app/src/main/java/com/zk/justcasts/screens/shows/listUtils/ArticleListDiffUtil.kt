@@ -1,4 +1,4 @@
-package com.zk.justcasts.screens.shows
+package com.zk.justcasts.screens.shows.listUtils
 
 import androidx.recyclerview.widget.DiffUtil
 import com.zk.justcasts.models.Podcast

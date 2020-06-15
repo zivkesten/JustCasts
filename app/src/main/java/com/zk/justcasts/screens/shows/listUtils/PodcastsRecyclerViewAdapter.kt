@@ -1,4 +1,4 @@
-package com.zk.justcasts.screens.shows
+package com.zk.justcasts.screens.shows.listUtils
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -16,7 +16,12 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
             notifyDataSetChanged()
             return
         }
-        val diffResult = DiffUtil.calculateDiff(ArticleListDiffUtil(values, items))
+        val diffResult = DiffUtil.calculateDiff(
+            ArticleListDiffUtil(
+                values,
+                items
+            )
+        )
         diffResult.dispatchUpdatesTo(this)
     }
 

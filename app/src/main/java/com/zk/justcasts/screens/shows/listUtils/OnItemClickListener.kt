@@ -1,4 +1,4 @@
-package com.zk.justcasts.screens.shows
+package com.zk.justcasts.screens.shows.listUtils
 
 import android.view.View
 import com.zk.justcasts.models.Podcast
