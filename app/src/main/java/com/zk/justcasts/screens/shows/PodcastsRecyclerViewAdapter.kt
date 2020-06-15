@@ -1,4 +1,4 @@
-package com.zk.justcasts.shows
+package com.zk.justcasts.screens.shows
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

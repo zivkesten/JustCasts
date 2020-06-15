@@ -1,10 +1,10 @@
-package com.zk.justcasts.search.model
+package com.zk.justcasts.screens.shows.model
+
+import com.zk.justcasts.models.Podcast
+
 
 data class ViewState(
-    val name: String,
-    val image: String,
-    val phoneNumber: String,
-    val email: String
+    val itemList: List<Podcast>
 )
 
 sealed class ViewEffect {
@@ -13,5 +13,7 @@ sealed class ViewEffect {
 
 sealed class Event {
     object ScreenLoad:  Event()
+    object SwipeToRefreshEvent: Event()
     data class DataReceived(val data: Any?) : Event()
+    data class ListItemClicked(val item: Podcast): Event()
 }

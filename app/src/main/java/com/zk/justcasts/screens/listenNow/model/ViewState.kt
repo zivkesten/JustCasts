@@ -1,4 +1,4 @@
-package com.zk.justcasts.listenNow.model
+package com.zk.justcasts.screens.listenNow.model
 
 data class ViewState(
     val name: String,

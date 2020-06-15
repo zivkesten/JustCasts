@@ -7,22 +7,45 @@
 
     <fragment
         android:id="@+id/showsFragment"
-        android:name="com.zk.justcasts.shows.views.MyShowsFragment"
+        android:name="com.zk.justcasts.screens.shows.views.MyShowsFragment"
         android:label="artists_fragment"
-        tools:layout="@layout/fragment_my_shows" />
+        tools:layout="@layout/fragment_my_shows">
+
+        <action
+            android:id="@+id/action_showsFragment_to_showFragment2"
+            app:destination="@id/showFragment"
+            app:popUpTo="@id/showsFragment">
+            <argument
+                android:name="data"
+                app:argType="com.zk.justcasts.models.Podcast" />
+            <argument
+                android:name="transitionName"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/listenNowFragment"
-        android:name="com.zk.justcasts.listenNow.views.ListenNowFragment"
+        android:name="com.zk.justcasts.screens.listenNow.views.ListenNowFragment"
         android:label="albums_fragment"
         tools:layout="@layout/fragment_listen_now" >
-        <action
-            android:id="@+id/navToAlbumFragment"
-            app:destination="@id/listenNowFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.zk.justcasts.search.views.SearchFragment"
+        android:name="com.zk.justcasts.screens.search.views.SearchFragment"
         android:label="playlists_fragment"
         tools:layout="@layout/fragment_search" />
+    <fragment
+        android:id="@+id/showFragment"
+        android:name="com.zk.justcasts.screens.show.views.ShowFragment"
+        android:label="show_fragment"
+        tools:layout="@layout/show_fragment">
+        <argument
+            android:name="data"
+            app:argType="com.zk.justcasts.models.Podcast"
+            />
+        <argument
+            android:name="transitionName"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

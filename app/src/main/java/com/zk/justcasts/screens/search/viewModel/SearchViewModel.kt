@@ -1,4 +1,4 @@
-package com.zk.justcasts.search.viewModel
+package com.zk.justcasts.screens.search.viewModel
 
 import androidx.lifecycle.ViewModel
 

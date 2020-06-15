@@ -1,14 +1,13 @@
-package com.zk.justcasts.shows.viewModel
+package com.zk.justcasts.screens.shows.viewModel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zk.justcasts.repository.Repository
-import com.zk.justcasts.shows.model.Event
-import com.zk.justcasts.shows.model.ViewEffect
-import com.zk.justcasts.shows.model.ViewState
+import com.zk.justcasts.screens.shows.model.Event
+import com.zk.justcasts.screens.shows.model.ViewEffect
+import com.zk.justcasts.screens.shows.model.ViewState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

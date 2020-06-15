@@ -1,4 +1,4 @@
-package com.zk.justcasts.shows
+package com.zk.justcasts.screens.shows
 
 import androidx.recyclerview.widget.DiffUtil
 import com.zk.justcasts.models.Podcast
@@ -32,5 +32,4 @@ class ArticleListDiffUtil(private var newItems: List<Podcast>, private var oldIt
         //you can return particular field for changed item.
         return super.getChangePayload(oldItemPosition, newItemPosition)
     }
-
 }
