@@ -1,6 +1,8 @@
 package com.zk.justcasts.repository
 
+import com.google.gson.Gson
 import com.zk.justcasts.models.BestPodcastsResponse
+import io.reactivex.Observable
 import org.koin.dsl.module
 
 val repositoryModule = module {
@@ -9,8 +11,16 @@ val repositoryModule = module {
 }
 
 class Repository(private val networkApi: NetworkApi)  {
-
-   suspend fun getPodcasts(): BestPodcastsResponse? {
+   fun getPodcasts(): Observable<BestPodcastsResponse?> {
        return networkApi.getPodcasts()
+           .map { response ->
+               response.body()?.let { return@map it }
+               response.errorBody()?.let { body ->
+                   return@map Gson().fromJson(
+                       body.string(),
+                       BestPodcastsResponse::class.java
+                   )
+               }
+           }
    }
 }

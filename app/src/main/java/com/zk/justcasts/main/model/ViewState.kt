@@ -9,9 +9,10 @@ data class ViewState(
 
 sealed class ViewEffect {
     object TransitionToScreenWithElement : ViewEffect()
+    data class AnimateNavigationViewVisibility(val visibility: Int): ViewEffect()
 }
 
 sealed class Event {
-    object ScreenLoad:  Event()
+    data class Navigation(val destinationId: Int):  Event()
     data class DataReceived(val data: Any?) : Event()
 }

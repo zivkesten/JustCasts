@@ -4,7 +4,7 @@ import com.zk.justcasts.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 
-private val KEY = BuildConfig.API_KEY
+private const val KEY = BuildConfig.API_KEY
 
 class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response =

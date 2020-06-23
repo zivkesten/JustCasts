@@ -1,6 +1,7 @@
-package com.zk.justcasts.screens.shows
+package com.zk.justcasts.screens.shows.listUtils
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +9,7 @@ import com.squareup.picasso.Picasso
 import com.zk.justcasts.databinding.ListItemShowBinding
 import com.zk.justcasts.models.Podcast
 
-class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(), private val listener: OnItemClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
+class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(), private val listener: OnPodcastClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
 
     fun update(items: List<Podcast>) {
         if (values.isEmpty()) {
@@ -16,7 +17,12 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
             notifyDataSetChanged()
             return
         }
-        val diffResult = DiffUtil.calculateDiff(ArticleListDiffUtil(values, items))
+        val diffResult = DiffUtil.calculateDiff(
+            PodcastListDiffUtil(
+                values,
+                items
+            )
+        )
         diffResult.dispatchUpdatesTo(this)
     }
 
@@ -47,4 +53,8 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
             }
         }
     }
+}
+
+interface OnPodcastClickListener {
+    fun onItemClick(item: Podcast, sharedElement: View)
 }

@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_my_shows">
 
         <action
-            android:id="@+id/action_showsFragment_to_showFragment2"
+            android:id="@+id/selectShow"
             app:destination="@id/showFragment"
             app:popUpTo="@id/showsFragment">
             <argument
