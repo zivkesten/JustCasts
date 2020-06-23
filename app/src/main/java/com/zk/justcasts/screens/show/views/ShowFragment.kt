@@ -1,24 +1,35 @@
 package com.zk.justcasts.screens.show.views
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialContainerTransform
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.R
 import com.zk.justcasts.databinding.ShowFragmentBinding
+import com.zk.justcasts.models.Episode
 import com.zk.justcasts.screens.show.viewModel.ShowViewModel
+import com.zk.justcasts.screens.shows.listUtils.EpisodesRecyclerViewAdapter
+import com.zk.justcasts.screens.shows.listUtils.OnEpisodeClickListener
+import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ShowFragment : Fragment() {
+class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     private val viewModel by viewModel<ShowViewModel>()
+
+    private val episodeAdapter =
+        EpisodesRecyclerViewAdapter(
+            listener = this
+        )
 
     private val args: ShowFragmentArgs by navArgs()
 
@@ -59,8 +70,19 @@ class ShowFragment : Fragment() {
         return binding.root
     }
 
+    private fun setupBinding() {
+        binding.episodeList.apply {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = episodeAdapter
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+    }
+
+    override fun onItemClick(item: Episode, sharedElement: View) {
+        Log.d("Zivi", "clicked episode ${item.title}")
     }
 }

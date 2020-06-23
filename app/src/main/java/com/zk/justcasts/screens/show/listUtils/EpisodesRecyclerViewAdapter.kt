@@ -6,19 +6,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
-import com.zk.justcasts.databinding.ListItemShowBinding
-import com.zk.justcasts.models.Podcast
+import com.zk.justcasts.databinding.ListItemEpisodeBinding
+import com.zk.justcasts.models.Episode
 
-class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(), private val listener: OnPodcastClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
+class EpisodesRecyclerViewAdapter(private var values: List<Episode> = ArrayList(), private val listener: OnEpisodeClickListener) : RecyclerView.Adapter<EpisodesRecyclerViewAdapter.ViewHolder>() {
 
-    fun update(items: List<Podcast>) {
+    fun update(items: List<Episode>) {
         if (values.isEmpty()) {
             values = items
             notifyDataSetChanged()
             return
         }
         val diffResult = DiffUtil.calculateDiff(
-            PodcastListDiffUtil(
+            EpisodeListDiffUtil(
                 values,
                 items
             )
@@ -28,7 +28,7 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ListItemShowBinding.inflate(inflater, parent, false)
+        val binding = ListItemEpisodeBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -38,23 +38,23 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
         return values.size
     }
 
-    inner class ViewHolder(private val binding: ListItemShowBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Podcast) {
+    inner class ViewHolder(private val binding: ListItemEpisodeBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Episode) {
             with(binding) {
-                showName.text = item.title
-                showCard.transitionName = "card$adapterPosition"
+                episodeTitle.text = item.title
+                episodeLayout.transitionName = "card$adapterPosition"
                 Picasso.get()
                     .load(item.image)
                     .placeholder(android.R.drawable.progress_indeterminate_horizontal)
-                    .into(showCover)
-                binding.showCard.setOnClickListener {
-                    listener.onItemClick(item, showCard)
+                    .into(episodeImage)
+                binding.episodeLayout.setOnClickListener {
+                    listener.onItemClick(item, episodeLayout)
                 }
             }
         }
     }
 }
 
-interface OnPodcastClickListener {
-    fun onItemClick(item: Podcast, sharedElement: View)
+interface OnEpisodeClickListener {
+    fun onItemClick(item: Episode, sharedElement: View)
 }
