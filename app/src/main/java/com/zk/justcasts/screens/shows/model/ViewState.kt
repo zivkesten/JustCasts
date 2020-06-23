@@ -4,11 +4,11 @@ import android.view.View
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
-import com.zk.justcasts.models.Podcast
+import com.zk.justcasts.models.PodcastDTO
 
 
 data class ViewState(
-    val itemList: List<Podcast>? = null
+    val itemList: List<PodcastDTO>? = null
 )
 
 sealed class ViewEffect {
@@ -21,12 +21,12 @@ sealed class Event {
     object ScreenLoad:  Event()
     object SwipeToRefreshEvent: Event()
     object SubscribeToPodcast: Event()
-    data class ItemClicked(val item: Podcast, val SharedElement: View): Event()
+    data class ItemClicked(val item: PodcastDTO, val SharedElement: View): Event()
 }
 
 sealed class Result {
     object ScreenLoadResult : Result()
-    data class GetPodcastsResult(val podcats: List<Podcast>) : Result()
+    data class GetPodcastsResult(val podcats: List<PodcastDTO>) : Result()
     data class SubscribeResult(val success: Boolean) : Result()
-    data class ItemClickedResult(val item: Podcast, val sharedElement: View) : Result()
+    data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

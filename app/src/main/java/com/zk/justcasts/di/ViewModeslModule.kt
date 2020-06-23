@@ -15,7 +15,8 @@ class ViewModelsModule {
 			viewModel { MyShowsViewModel(get()) }
 			viewModel { SearchViewModel() }
 			viewModel { ListenNowViewModel() }
-			viewModel { ShowViewModel(get()) }
+			viewModel { ShowViewModel(get(), get()) }
+
 		}
 	}
 }

@@ -7,11 +7,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.databinding.ListItemShowBinding
-import com.zk.justcasts.models.Podcast
+import com.zk.justcasts.models.PodcastDTO
 
-class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(), private val listener: OnPodcastClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
+class PodcastsRecyclerViewAdapter(private var values: List<PodcastDTO> = ArrayList(), private val listener: OnItemClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
 
-    fun update(items: List<Podcast>) {
+    fun update(items: List<PodcastDTO>) {
         if (values.isEmpty()) {
             values = items
             notifyDataSetChanged()
@@ -39,7 +39,7 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
     }
 
     inner class ViewHolder(private val binding: ListItemShowBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Podcast) {
+        fun bind(item: PodcastDTO) {
             with(binding) {
                 showName.text = item.title
                 showCard.transitionName = "card$adapterPosition"
@@ -56,5 +56,5 @@ class PodcastsRecyclerViewAdapter(private var values: List<Podcast> = ArrayList(
 }
 
 interface OnPodcastClickListener {
-    fun onItemClick(item: Podcast, sharedElement: View)
+    fun onItemClick(item: PodcastDTO, sharedElement: View)
 }

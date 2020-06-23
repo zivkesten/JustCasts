@@ -16,8 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
 import com.zk.justcasts.models.Podcast
-import com.zk.justcasts.screens.shows.listUtils.OnPodcastClickListener
-import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
+import com.zk.justcasts.screens.shows.OnItemClickListener
+import com.zk.justcasts.screens.shows.PodcastsRecyclerViewAdapter
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.ViewEffect
 import com.zk.justcasts.screens.shows.model.ViewState
@@ -109,7 +109,7 @@ class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.On
         }
     }
 
-    override fun onItemClick(item: Podcast, sharedElement: View) {
+    override fun onItemClick(item: PodcastDTO, sharedElement: View) {
         viewModel.processInput(Event.ItemClicked(item, sharedElement))
     }
 

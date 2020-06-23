@@ -12,7 +12,7 @@ data class BestPodcastsResponse(
     @SerializedName("has_next")
     val has_next: Boolean?,
     @SerializedName("podcasts")
-    val podcasts: List<Podcast>?,
+    val podcasts: List<PodcastDTO>?,
     @SerializedName("parent_id")
     val parent_id: Int?,
     @SerializedName("page_number")

@@ -1,7 +1,7 @@
 package com.zk.justcasts.screens.shows.listUtils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.zk.justcasts.models.Podcast
+import com.zk.justcasts.models.PodcastDTO
 
 class PodcastListDiffUtil(private var newItems: List<Podcast>, private var oldItems: List<Podcast>) :
     DiffUtil.Callback() {

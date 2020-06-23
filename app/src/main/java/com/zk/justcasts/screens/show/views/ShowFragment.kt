@@ -79,6 +79,13 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        binding.floatingActionButton.setOnClickListener {
+            args.data?.let {
+                val e = it.entity()
+                viewModel.insert(e)
+        }
+
+        }
 
     }
 

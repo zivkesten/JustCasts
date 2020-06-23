@@ -1,4 +1,4 @@
-package com.zk.justcasts.networking
+package com.zk.justcasts.repository.networking
 
 import com.zk.justcasts.BuildConfig
 import okhttp3.OkHttpClient
