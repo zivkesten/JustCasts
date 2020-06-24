@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.zk.justcasts.models.BestPodcastsResponse
+import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.Result
@@ -62,7 +64,7 @@ class MyShowsViewModel(private val repository: Repository): ViewModel() {
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
-    private fun Observable<Event>.eventToResult(): Observable<out Result?> {
+    private fun Observable<Event>.eventToResult(): Observable<Lce<out Result>> {
         return publish { o ->
             Observable.merge(
                 o.ofType(Event.ScreenLoad::class.java).onScreenLoad(),
@@ -72,24 +74,37 @@ class MyShowsViewModel(private val repository: Repository): ViewModel() {
         }
     }
 
-    private fun Observable<out Result>.resultToViewState(): Observable<ViewState> {
+    private fun Observable<Lce<out Result>>.resultToViewState(): Observable<ViewState> {
         return scan(ViewState()) { state, newValue ->
             when (newValue) {
-                is GetPodcastsResult -> state.copy(itemList = newValue.podcats)
-                is Result.ScreenLoadResult  -> state.copy()
-                is SubscribeResult -> state.copy()
-                else -> state.copy()
+                is Lce.Content -> {
+                    when(newValue.packet) {
+                        is GetPodcastsResult -> state.copy(itemList = newValue.packet.podcastsResponse.podcasts)
+                        is Result.ScreenLoadResult  -> state.copy()
+                        is SubscribeResult -> state.copy()
+                        is ItemClickedResult -> state.copy()
+                    }
+                }
+                is Lce.Error ->  state.copy()
+                is Lce.Loading -> state.copy()
             }
-        }
+        }.distinctUntilChanged()
     }
 
-    private fun Observable<out Result>.resultToViewEffect(): Observable<ViewEffect> {
-            return map {
-                when(it) {
-                    is SubscribeResult -> ShowVisualResultForAddToFavourites(it.toString())
-                    is ItemClickedResult -> itemClickToViewEffect(it)
-                    is GetPodcastsResult, Result.ScreenLoadResult -> ViewEffect.NoEffect
+    private fun Observable<Lce<out Result>>.resultToViewEffect(): Observable<ViewEffect> {
+            return map { result ->
+                when (result) {
+                    is Lce.Content -> {
+                        when (result.packet) {
+                            is SubscribeResult -> ShowVisualResultForAddToFavourites(result.toString())
+                            is ItemClickedResult -> itemClickToViewEffect(result.packet)
+                            else -> ViewEffect.NoEffect
+                        }
+                    }
+                    is Lce.Error -> ShowVisualResultForAddToFavourites(result.packet.toString())
+                    is Lce.Loading -> ViewEffect.NoEffect
                 }
+
             }
     }
 
@@ -105,23 +120,32 @@ class MyShowsViewModel(private val repository: Repository): ViewModel() {
         return directions
     }
 
-    private fun Observable<Event.ScreenLoad>.onScreenLoad(): Observable<out GetPodcastsResult?> {
+    private fun Observable<Event.ScreenLoad>.onScreenLoad(): Observable<Lce<GetPodcastsResult>> {
         return switchMap { loadFromAPI() }
     }
 
-    private fun Observable<Event.SwipeToRefreshEvent>.onSwipeRefresh(): Observable<out GetPodcastsResult?> {
+    private fun Observable<Event.SwipeToRefreshEvent>.onSwipeRefresh(): Observable<Lce<GetPodcastsResult>> {
         return switchMap { loadFromAPI() }
     }
 
-    private fun Observable<Event.ItemClicked>.onItemClick(): Observable<out ItemClickedResult> {
-        return switchMap { Observable.just(ItemClickedResult(it.item, it.SharedElement)) }
+    private fun Observable<Event.ItemClicked>.onItemClick(): Observable<Lce<ItemClickedResult>> {
+        return switchMap { Observable.just(Lce.Content(ItemClickedResult(it.item, it.SharedElement))) }
     }
 
-    private fun loadFromAPI(): Observable<GetPodcastsResult?>? {
+    private fun loadFromAPI(): Observable<Lce<GetPodcastsResult>>? {
         return repository.getPodcasts()
             .subscribeOn(Schedulers.io())
             .map { optionalResponse ->
-                optionalResponse.podcasts?.let { GetPodcastsResult(it) }
+                if (!optionalResponse.errorMessage.isNullOrBlank()) {
+                    Lce.Error(GetPodcastsResult(optionalResponse))
+                } else {
+                    Lce.Content(GetPodcastsResult(optionalResponse))
+                }
+            } .onErrorReturn {
+                Lce.Error(GetPodcastsResult(BestPodcastsResponse(errorMessage = "error")))
             }
+            .startWith(Lce.Loading())
+
+
     }
 }

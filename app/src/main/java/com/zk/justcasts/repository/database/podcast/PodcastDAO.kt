@@ -1,6 +1,9 @@
 package com.zk.justcasts.repository.database.podcast
 
 import androidx.room.*
+import io.reactivex.Observable
+import io.reactivex.Single
+import java.util.*
 
 @Dao
 interface PodcastDAO {
@@ -14,7 +17,7 @@ interface PodcastDAO {
     fun insertAll(vararg podcastEntities: PodcastEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(podcastEntity: PodcastEntity): Long
+    fun insert(podcastEntity: PodcastEntity): Single<Long>
 
     @Delete
     fun delete(user: PodcastEntity)

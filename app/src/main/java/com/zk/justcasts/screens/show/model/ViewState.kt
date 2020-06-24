@@ -8,7 +8,9 @@ data class ViewState(val episodes: List<Episode>? = null,
                      val podcastImage: String? = null)
 
 sealed class ViewEffect {
+    object NoEffect : ViewEffect()
     object TransitionToScreenWithElement : ViewEffect()
+    data class ShowAddToFavConfirmation(val podcastAdded: PodcastDTO) : ViewEffect()
 }
 
 sealed class Event {
@@ -21,4 +23,5 @@ sealed class Event {
 sealed class Result {
     object TransitionToScreenWithElement : Result()
     data class GetPodcastsResult(val podcasts: List<PodcastDTO>) : Result()
+    data class ShowAddToFavConfirmation(val podcastAdded: PodcastDTO) : Result()
 }

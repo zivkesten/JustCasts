@@ -15,18 +15,22 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
-import com.zk.justcasts.models.Podcast
+import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.screens.shows.OnItemClickListener
-import com.zk.justcasts.screens.shows.PodcastsRecyclerViewAdapter
+import com.zk.justcasts.screens.shows.listUtils.OnPodcastClickListener
+import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.ViewEffect
 import com.zk.justcasts.screens.shows.model.ViewState
 import com.zk.justcasts.screens.shows.viewModel.MyShowsViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.OnRefreshListener {
+class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.OnRefreshListener,
+    OnItemClickListener {
 
     private val viewModel by viewModel<MyShowsViewModel>()
 

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.databinding.ListItemShowBinding
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.screens.shows.OnItemClickListener
 
 class PodcastsRecyclerViewAdapter(private var values: List<PodcastDTO> = ArrayList(), private val listener: OnItemClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
 

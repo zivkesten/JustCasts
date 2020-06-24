@@ -1,5 +1,6 @@
 package com.zk.justcasts.repository.database.podcast
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -13,7 +14,8 @@ import java.util.*
 @Entity
 data class PodcastEntity(
     @PrimaryKey
-    @ColumnInfo(name = "id") val id: String?,
+    @NonNull
+    @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "rss") val rss: String?,
     @ColumnInfo(name = "type") val type: String?,
     @ColumnInfo(name = "email") val email: String?,

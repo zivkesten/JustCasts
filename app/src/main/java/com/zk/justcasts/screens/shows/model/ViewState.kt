@@ -4,6 +4,7 @@ import android.view.View
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigator
 import androidx.navigation.fragment.FragmentNavigator
+import com.zk.justcasts.models.BestPodcastsResponse
 import com.zk.justcasts.models.PodcastDTO
 
 
@@ -26,7 +27,7 @@ sealed class Event {
 
 sealed class Result {
     object ScreenLoadResult : Result()
-    data class GetPodcastsResult(val podcats: List<PodcastDTO>) : Result()
+    data class GetPodcastsResult(val podcastsResponse: BestPodcastsResponse) : Result()
     data class SubscribeResult(val success: Boolean) : Result()
     data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

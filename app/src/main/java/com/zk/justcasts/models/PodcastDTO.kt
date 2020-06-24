@@ -47,8 +47,7 @@ data class PodcastDTO (
     val latest_pub_date_ms: Long?): Parcelable, BaseDTO {
 
     override fun entity(): PodcastEntity {
-        return PodcastEntity(
-            null, id, rss, type, email, /*extra,*/ image, title, country,
+        return PodcastEntity(id?: "", rss, type, email, /*extra,*/ image, title, country,
             website, language, /*genre_ids,*/ itunes_id,
             publisher, thumbnail, is_claimed, description, total_episodes, explicit_content, latest_pub_date_ms)
     }
