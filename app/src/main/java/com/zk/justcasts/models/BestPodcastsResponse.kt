@@ -4,20 +4,21 @@ import com.google.gson.annotations.SerializedName
 
 data class BestPodcastsResponse(
     @SerializedName("id")
-    val id: Int?,
+    val id: Int? = null,
     @SerializedName("name")
-    val name: String?,
+    val name: String? = null,
     @SerializedName("total")
-    val total: Int?,
+    val total: Int? = null,
     @SerializedName("has_next")
-    val has_next: Boolean?,
+    val has_next: Boolean? = null,
     @SerializedName("podcasts")
-    val podcasts: List<Podcast>?,
+    val podcasts: List<PodcastDTO> = emptyList(),
     @SerializedName("parent_id")
-    val parent_id: Int?,
+    val parent_id: Int? = null,
     @SerializedName("page_number")
-    val page_number: Int?,
+    val page_number: Int? = null,
     @SerializedName("next_page_number")
-    val next_page_number: Int?,
+    val next_page_number: Int? = null,
     @SerializedName("previous_page_number")
-    val previous_page_number: Int?)
+    val previous_page_number: Int? = null,
+    @SerializedName("Error") val errorMessage: String? = null)

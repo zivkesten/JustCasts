@@ -1,4 +1,4 @@
-package com.zk.justcasts.networking
+package com.zk.justcasts.repository.networking
 
 import com.zk.justcasts.BuildConfig
 import okhttp3.Interceptor
@@ -10,7 +10,9 @@ class AuthInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response =
         chain.proceed(
             chain.request().newBuilder()
-                .addHeader("X-ListenAPI-Key", KEY)
+                .addHeader("X-ListenAPI-Key",
+                    KEY
+                )
                 .build()
         )
 }

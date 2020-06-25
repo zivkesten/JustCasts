@@ -1,7 +1,6 @@
 package com.zk.justcasts.repository
 
 import com.zk.justcasts.models.BestPodcastsResponse
-import io.reactivex.Observable
 import org.koin.dsl.module
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -16,14 +15,13 @@ val apiModule = module {
 }
 
 interface NetworkApi {
+
     @GET("best_podcasts")
-    fun getPodcasts(): Observable<Response<BestPodcastsResponse?>>
+    suspend fun getPodcastsASync(): Response<BestPodcastsResponse?>
 
     @GET("podcasts")
-    fun getPodcast(
+    suspend fun getPodcast(
         @Query("podcasts") podcastId: String
-    ): Observable<Response<BestPodcastsResponse?>>
+    ): Response<BestPodcastsResponse?>
 
-    @GET("best_podcasts")
-    fun getEpisode(): Observable<Response<BestPodcastsResponse?>>
 }

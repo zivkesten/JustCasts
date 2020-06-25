@@ -2,6 +2,7 @@ package com.zk.justcasts.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.zk.justcasts.repository.database.podcast.ExtraEntity
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -30,4 +31,12 @@ data class Extra(
     val facebook_handle: String?,
     @SerializedName("instagram_handle")
     val instagram_handle: String?
-): Parcelable
+): Parcelable, BaseDTO {
+
+    override fun entity(): BaseEntity {
+        return ExtraEntity(1, url1, url2, url3, google_url,
+            spotify_url, youtube_url, linkdin_url, wechat_handle,
+            patreon_handle, twitter_handle,
+            facebook_handle, instagram_handle)
+    }
+}

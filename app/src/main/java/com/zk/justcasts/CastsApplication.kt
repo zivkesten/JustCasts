@@ -1,10 +1,11 @@
 package com.zk.justcasts
 
 import android.app.Application
-import com.zk.justcasts.networking.networkModule
+import com.zk.justcasts.repository.networking.networkModule
 import com.zk.justcasts.repository.repositoryModule
 import com.zk.justcasts.di.ViewModelsModule
 import com.zk.justcasts.repository.apiModule
+import com.zk.justcasts.repository.database.databaseModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -20,7 +21,8 @@ class CastsApplication: Application() {
                 ViewModelsModule.modules,
                 repositoryModule,
                 apiModule,
-                networkModule
+                networkModule,
+                databaseModule
             ))
         }
     }

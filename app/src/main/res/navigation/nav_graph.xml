@@ -17,7 +17,7 @@
             app:popUpTo="@id/showsFragment">
             <argument
                 android:name="data"
-                app:argType="com.zk.justcasts.models.Podcast" />
+                app:argType="com.zk.justcasts.models.PodcastDTO" />
             <argument
                 android:name="transitionName"
                 app:argType="string" />
@@ -41,7 +41,7 @@
         tools:layout="@layout/show_fragment">
         <argument
             android:name="data"
-            app:argType="com.zk.justcasts.models.Podcast"
+            app:argType="com.zk.justcasts.models.PodcastDTO"
             />
         <argument
             android:name="transitionName"
