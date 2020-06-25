@@ -22,6 +22,6 @@ sealed class Event {
 
 sealed class Result {
     object TransitionToScreenWithElement : Result()
-    data class GetPodcastsResult(val podcasts: List<PodcastDTO>) : Result()
+    object ScreenLoad:  Result()
     data class ShowAddToFavConfirmation(val podcastAdded: PodcastDTO) : Result()
 }

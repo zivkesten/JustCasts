@@ -1,151 +1,130 @@
 package com.zk.justcasts.screens.shows.viewModel
 
 import android.util.Log
+import android.view.View
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import com.zk.justcasts.models.BestPodcastsResponse
+import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.Result
-import com.zk.justcasts.screens.shows.model.Result.SubscribeResult
-import com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement
-import com.zk.justcasts.screens.shows.model.ViewEffect.ShowVisualResultForAddToFavourites
 import com.zk.justcasts.screens.shows.model.Result.ItemClickedResult
-import com.zk.justcasts.screens.shows.model.Result.GetPodcastsResult
 import com.zk.justcasts.screens.shows.model.ViewEffect
 import com.zk.justcasts.screens.shows.model.ViewState
 import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
-import io.reactivex.Observable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class MyShowsViewModel(private val repository: Repository): ViewModel() {
 
-    private val eventEmitter: PublishSubject<Event> = PublishSubject.create()
+    private val viewStateLD = MutableLiveData<ViewState>()
+    private val viewEffectLD = MutableLiveData<ViewEffect>()
+    val viewState: LiveData<ViewState> get() = viewStateLD
+    val viewEffects: LiveData<ViewEffect> get() = viewEffectLD
 
-    private lateinit var disposable: Disposable
+    private var currentViewState = ViewState()
+        set(value) {
+            field = value
+            viewStateLD.value = value
+        }
 
-    val viewState: Observable<ViewState>
-    val viewEffects: Observable<ViewEffect>
+    private var loadFromBEJob: Job? = null
 
-    init {
-        eventEmitter
-            .doOnNext { Log.d("Zivi", "eventEmitter -> $it") }
-            .eventToResult()
-            .doOnNext { Log.d("Zivi", "eventToResult -> $it") }
-            .share()
-            .doOnError { Log.e("Zivi", "doOnError " + it.localizedMessage) }
-
-            .also { result ->
-                viewState = result
-                    .resultToViewState()
-                    .doOnNext { Log.d("Zivi", "resultToViewState -> $it") }
-                    .replay(1)
-                    .autoConnect(1) { disposable = it }
-
-                viewEffects = result
-                    .resultToViewEffect()
-                    .doOnNext { Log.d("Zivi", "resultToViewEffect -> $it") }
-            }
+    fun onEvent(event: Event) {
+        Log.d("Zivi","----- event ${event.javaClass.simpleName}")
+        eventToResult(event)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposable.dispose()
-    }
-
-    fun processInput(event: Event) {
-        Log.d("Zivi", "processInput: $event")
-        eventEmitter.onNext(event)
-    }
-    // -----------------------------------------------------------------------------------
-    // Internal helpers
-
-    private fun Observable<Event>.eventToResult(): Observable<Lce<out Result>> {
-        return publish { o ->
-            Observable.merge(
-                o.ofType(Event.ScreenLoad::class.java).onScreenLoad(),
-                o.ofType(Event.ItemClicked::class.java).onItemClick(),
-                o.ofType(Event.SwipeToRefreshEvent::class.java).onSwipeRefresh()
-            )
+    private fun eventToResult(event: Event) {
+        when (event) {
+            is Event.SwipeToRefreshEvent, Event.ScreenLoad -> { loadFromApi() }
+            is Event.ItemClicked -> { onItemClick(event.item, event.SharedElement) }
         }
     }
 
-    private fun Observable<Lce<out Result>>.resultToViewState(): Observable<ViewState> {
-        return scan(ViewState()) { state, newValue ->
-            when (newValue) {
-                is Lce.Content -> {
-                    when(newValue.packet) {
-                        is GetPodcastsResult -> state.copy(itemList = newValue.packet.podcastsResponse.podcasts)
-                        is Result.ScreenLoadResult  -> state.copy()
-                        is SubscribeResult -> state.copy()
-                        is ItemClickedResult -> state.copy()
-                    }
-                }
-                is Lce.Error ->  state.copy()
-                is Lce.Loading -> state.copy()
+    private fun loadFromApi() {
+        resultToViewState(Lce.Loading())
+        if (loadFromBEJob?.isActive == true) loadFromBEJob?.cancel()
+
+        loadFromBEJob = viewModelScope.launch {
+            val response = repository.getPodcastsASync()
+            val result: Lce<Result> = if (response.errorMessage?.isEmpty() == false) {
+                Lce.Error(Result.GetPodcastsResult(response))
+            } else {
+                Lce.Content(Result.GetPodcastsResult(response))
             }
-        }.distinctUntilChanged()
+            resultToViewState(result)
+        }
     }
 
-    private fun Observable<Lce<out Result>>.resultToViewEffect(): Observable<ViewEffect> {
-            return map { result ->
-                when (result) {
-                    is Lce.Content -> {
-                        when (result.packet) {
-                            is SubscribeResult -> ShowVisualResultForAddToFavourites(result.toString())
-                            is ItemClickedResult -> itemClickToViewEffect(result.packet)
-                            else -> ViewEffect.NoEffect
-                        }
-                    }
-                    is Lce.Error -> ShowVisualResultForAddToFavourites(result.packet.toString())
-                    is Lce.Loading -> ViewEffect.NoEffect
-                }
-
-            }
+    private fun onItemClick(item: PodcastDTO, sharedElement: View) {
+        val result = ItemClickedResult(item, sharedElement)
+        val lceOfResult: Lce.Content<Result> = Lce.Content(result)
+        resultToViewEffect(lceOfResult)
+        resultToViewState(lceOfResult)
     }
 
-    private fun itemClickToViewEffect(it: ItemClickedResult): TransitionToScreenWithElement? {
-        var directions: TransitionToScreenWithElement? = null
+    // -----------------------------------------------------------------------------------
+    // Internal helpers
+
+    private fun resultToViewState(result: Lce<Result>) {
+        Log.d("Zivi", "----- result $result")
+
+        currentViewState = when (result) {
+            is Lce.Content -> {
+                when (result.packet) {
+                    is Result.ScreenLoadResult -> {
+                        currentViewState.copy()
+                    }
+                    is Result.GetPodcastsResult -> {
+                        val podcasts = result.packet.podcastsResponse.podcasts
+                        currentViewState.copy(
+                            itemList = podcasts
+                        )
+                    }
+
+                    is ItemClickedResult -> {
+                        currentViewState.copy()
+                    }
+                }
+            }
+
+            is Lce.Loading -> {
+                currentViewState.copy(/*loading state*/)
+            }
+
+            is Lce.Error -> {
+                currentViewState.copy(/*error state with 'it'*/)
+            }
+        }
+    }
+
+    private fun resultToViewEffect(result: Lce<Result>){
+        var effect: ViewEffect? = ViewEffect.NoEffect
+        when (result) {
+            is Lce.Content -> {
+                when (result.packet)  {
+                    is ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
+                }
+            }
+        }
+        viewEffectLD.value = effect
+    }
+
+    private fun itemClickToViewEffect(it: ItemClickedResult): ViewEffect.TransitionToScreenWithElement? {
+        var directions: ViewEffect.TransitionToScreenWithElement? = null
         val sharedElement = it.sharedElement
         val item = it.item
         ViewCompat.getTransitionName(sharedElement)?.let { transitionName ->
             val extras = FragmentNavigatorExtras(sharedElement to transitionName)
             val direction = MyShowsFragmentDirections.selectShow(item, transitionName)
-            directions = TransitionToScreenWithElement(extras, direction)
+            directions = ViewEffect.TransitionToScreenWithElement(extras, direction)
         }
         return directions
-    }
-
-    private fun Observable<Event.ScreenLoad>.onScreenLoad(): Observable<Lce<GetPodcastsResult>> {
-        return switchMap { loadFromAPI() }
-    }
-
-    private fun Observable<Event.SwipeToRefreshEvent>.onSwipeRefresh(): Observable<Lce<GetPodcastsResult>> {
-        return switchMap { loadFromAPI() }
-    }
-
-    private fun Observable<Event.ItemClicked>.onItemClick(): Observable<Lce<ItemClickedResult>> {
-        return switchMap { Observable.just(Lce.Content(ItemClickedResult(it.item, it.SharedElement))) }
-    }
-
-    private fun loadFromAPI(): Observable<Lce<GetPodcastsResult>>? {
-        return repository.getPodcasts()
-            .subscribeOn(Schedulers.io())
-            .map { optionalResponse ->
-                if (!optionalResponse.errorMessage.isNullOrBlank()) {
-                    Lce.Error(GetPodcastsResult(optionalResponse))
-                } else {
-                    Lce.Content(GetPodcastsResult(optionalResponse))
-                }
-            } .onErrorReturn {
-                Lce.Error(GetPodcastsResult(BestPodcastsResponse(errorMessage = "error")))
-            }
-            .startWith(Lce.Loading())
-
-
     }
 }

@@ -1,14 +1,11 @@
 package com.zk.justcasts.repository.database.podcast
 
 import androidx.room.*
-import io.reactivex.Observable
-import io.reactivex.Single
-import java.util.*
 
 @Dao
 interface PodcastDAO {
     @Query("SELECT * FROM podcastentity")
-    fun getAll(): List<PodcastEntity>
+    suspend fun getAll(): List<PodcastEntity>
 //
 //    @Query("SELECT * FROM podcastentity WHERE id LIKE :id LIMIT 1")
 //    fun findById(title: String, id: String): PodcastEntity
@@ -17,7 +14,7 @@ interface PodcastDAO {
     fun insertAll(vararg podcastEntities: PodcastEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(podcastEntity: PodcastEntity): Single<Long>
+    suspend fun insert(podcastEntity: PodcastEntity): Long
 
     @Delete
     fun delete(user: PodcastEntity)

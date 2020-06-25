@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigator
 import androidx.navigation.findNavController
@@ -16,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.extensions.observe
 import com.zk.justcasts.screens.shows.OnItemClickListener
 import com.zk.justcasts.screens.shows.listUtils.OnPodcastClickListener
 import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
@@ -23,10 +25,6 @@ import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.ViewEffect
 import com.zk.justcasts.screens.shows.model.ViewState
 import com.zk.justcasts.screens.shows.viewModel.MyShowsViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.OnRefreshListener,
@@ -41,15 +39,14 @@ class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.On
             listener = this
         )
 
-    private var disposables: CompositeDisposable = CompositeDisposable()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enterTransition = MaterialFadeThrough()
-        observeViewState()
         if (savedInstanceState == null) {
-            viewModel.processInput(Event.ScreenLoad)
+            viewModel.onEvent(Event.ScreenLoad)
         }
+        observe(viewModel.viewState, Observer { render(it) })
+        observe(viewModel.viewEffects, Observer { trigger(it) })
     }
 
     override fun onCreateView(
@@ -68,30 +65,10 @@ class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.On
         view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun observeViewState() {
-        disposables.addAll(
-            viewModel
-                .viewState
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { Log.d("Zivi","viewState $it") }
-                .subscribe { state -> render(state) },
-            viewModel
-                .viewEffects
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { Log.d("Zivi","viewEffects $it") }
-                .subscribe { effect -> trigger(effect) }
-        )
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
-    }
-
-    private fun render(state: ViewState) {
-        val items  = state.itemList?: return
-        showsAdapter.update(items)
-        binding.swiperefresh.isRefreshing = false
+    private fun render(viewState: ViewState?) {
+        if (viewState == null) return // Ignore null values
+        Log.d("Zivi", "----- viewState $viewState")
+        showsAdapter.update(viewState.itemList)
     }
 
     private fun trigger(effect: ViewEffect) {
@@ -114,11 +91,10 @@ class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.On
     }
 
     override fun onItemClick(item: PodcastDTO, sharedElement: View) {
-        viewModel.processInput(Event.ItemClicked(item, sharedElement))
+        viewModel.onEvent(Event.ItemClicked(item, sharedElement))
     }
 
     override fun onRefresh() {
-        viewModel.processInput(Event.SwipeToRefreshEvent)
-        viewModel.processInput(Event.SubscribeToPodcast)
+        viewModel.onEvent(Event.SwipeToRefreshEvent)
     }
 }

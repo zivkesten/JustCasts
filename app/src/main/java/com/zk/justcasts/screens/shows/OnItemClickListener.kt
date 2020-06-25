@@ -5,5 +5,5 @@ import com.zk.justcasts.models.PodcastDTO
 
 
 interface OnItemClickListener {
-    fun onItemClick(item: PodcastDTO, sharedEllement: View)
+    fun onItemClick(item: PodcastDTO, sharedElement: View)
 }
