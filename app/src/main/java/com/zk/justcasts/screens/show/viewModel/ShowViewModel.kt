@@ -36,8 +36,18 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
 
     private fun eventToResult(event: Event) {
         when (event) {
-            is Event.ScreenLoad -> { Log.d("Zivi", "Screen load ${javaClass.simpleName}") }
+            is Event.ScreenLoad -> { onScreenLoad(event.data) }
             is Event.AddToMyShows -> { onAddToMyShows(event.item) }
+        }
+    }
+
+    private fun onScreenLoad(item: PodcastDTO) {
+        resultToViewEffect(Lce.Loading())
+        resultToViewState(Lce.Loading())
+        viewModelScope.launch {
+            val episodes = repository.getEpisodesASync(item.id)
+            Log.d("Zivi", "episodes: $episodes")
+            resultToViewState(Lce.Content(Result.GetEpisodes(episodes)))
         }
     }
 
@@ -61,7 +71,6 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         }
     }
 
-
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
@@ -71,7 +80,7 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         currentViewState = when (result) {
             is Lce.Content -> {
                 when (result.packet) {
-                    is Result.ScreenLoad -> currentViewState.copy()
+                    is Result.GetEpisodes -> currentViewState.copy(episodes = result.packet.episodes)
                     else -> currentViewState.copy()
                 }
             }
@@ -98,18 +107,4 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         Log.d("Zivi", "resultToViewEffect $effect")
         viewEffectLD.value = effect
     }
-
-//    private fun itemClickToViewEffect(it: Result.ItemClickedResult): com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement? {
-//        var directions: com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement? = null
-//        val sharedElement = it.sharedElement
-//        val item = it.item
-//        ViewCompat.getTransitionName(sharedElement)?.let { transitionName ->
-//            val extras = FragmentNavigatorExtras(sharedElement to transitionName)
-//            val direction = MyShowsFragmentDirections.selectShow(item, transitionName)
-//            directions = com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement(extras, direction)
-//        }
-//        return directions
-//    }
-
-
 }

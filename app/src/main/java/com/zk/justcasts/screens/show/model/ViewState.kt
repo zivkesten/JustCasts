@@ -1,9 +1,9 @@
 package com.zk.justcasts.screens.show.model
 
-import com.zk.justcasts.models.Episode
+import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.models.PodcastDTO
 
-data class ViewState(val episodes: List<Episode>? = null,
+data class ViewState(val episodes: List<EpisodeDTO>? = null,
                      val podcastTitle: String? = null,
                      val podcastImage: String? = null)
 
@@ -14,8 +14,7 @@ sealed class ViewEffect {
 }
 
 sealed class Event {
-    object ScreenLoad:  Event()
-    data class DataReceived(val data: Any?) : Event()
+    data class ScreenLoad(val data: PodcastDTO): Event()
     data class AddToMyShows(val item: PodcastDTO): Event()
     data class ListItemClicked(val item: PodcastDTO): Event()
 }
@@ -23,5 +22,6 @@ sealed class Event {
 sealed class Result {
     object TransitionToScreenWithElement : Result()
     object ScreenLoad:  Result()
+    data class GetEpisodes(val episodes: List<EpisodeDTO>?): Result()
     data class ShowAddToFavConfirmation(val podcastAdded: PodcastDTO) : Result()
 }
