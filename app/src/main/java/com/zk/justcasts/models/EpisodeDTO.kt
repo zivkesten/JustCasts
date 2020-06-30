@@ -2,6 +2,7 @@ package com.zk.justcasts.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.zk.justcasts.repository.database.podcast.PodcastEntity
 import kotlinx.android.parcel.Parcelize
 
 

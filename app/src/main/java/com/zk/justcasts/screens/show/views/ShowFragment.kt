@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
@@ -100,17 +101,12 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     private fun trigger(effect: ViewEffect) {
         when(effect) {
-            is ViewEffect.ShowAddToFavConfirmation ->  {
-                Log.d("Zivi", "Added to favourites ${effect.podcastAdded.title}")
-                val rootView: View = requireActivity().window.decorView.findViewById(android.R.id.content)
-                Snackbar.make(rootView, effect.podcastAdded.title + "Was added", Snackbar.LENGTH_LONG).show()
-            }
             is ViewEffect.NoEffect -> Log.d("Zivi", "no effect")
-            is ViewEffect.TransitionToScreenWithElement -> TODO()
+            is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
         }
     }
 
     override fun onItemClick(item: EpisodeDTO, sharedElement: View) {
-        Log.d("Zivi", "clicked episode ${item.title}")
+        viewModel.onEvent(Event.ListItemClicked(item, sharedElement))
     }
 }

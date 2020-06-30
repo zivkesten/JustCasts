@@ -74,12 +74,8 @@ class MyShowsFragment: Fragment(), OnPodcastClickListener, SwipeRefreshLayout.On
     private fun trigger(effect: ViewEffect) {
         when(effect) {
             is ViewEffect.ShowVisualResultForAddToFavourites ->  Snackbar.make(binding.showsCoordinator, effect.message, Snackbar.LENGTH_LONG).show()
-            is ViewEffect.TransitionToScreenWithElement -> transitionWithNavigationComponents(effect.extras, effect.direction)
+            is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
         }
-    }
-
-    private fun transitionWithNavigationComponents(extras: Navigator.Extras, direction: NavDirections) {
-        view?.findNavController()?.navigate(direction, extras)
     }
 
     private fun setupBinding() {

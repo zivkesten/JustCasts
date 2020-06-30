@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.databinding.ListItemEpisodeBinding
 import com.zk.justcasts.models.EpisodeDTO
-import com.zk.justcasts.screens.shows.listUtils.EpisodeListDiffUtil
+import com.zk.justcasts.screens.show.listUtils.EpisodeListDiffUtil
 
 class EpisodesRecyclerViewAdapter(private var values: List<EpisodeDTO> = ArrayList(), private val listener: OnEpisodeClickListener) : RecyclerView.Adapter<EpisodesRecyclerViewAdapter.ViewHolder>() {
 

@@ -59,4 +59,26 @@ class Repository(private val networkApi: NetworkApi)  {
         }
         return podcast.episodes
     }
+
+    suspend fun search(text: String): List<PodcastDTO>? {
+        var searchResponse = SearchResponse(errorMessage = searchError)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = networkApi.search(text, "podcast")
+                response.body()?.let {
+                    Log.w("Zivi", "search response $it")
+                    searchResponse = it
+                }
+
+                response.errorBody()?.let { body ->
+                    searchResponse = Gson().fromJson(body.string(), SearchResponse::class.java)
+                }
+            } catch (ex: IOException) {
+                Log.w("Zivi", "search fail", ex)
+            } catch (ex: NullPointerException) {
+                Log.w("Zivi", "search fail", ex)
+            }
+        }
+        return searchResponse.results
+    }
 }

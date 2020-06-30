@@ -2,6 +2,7 @@ package com.zk.justcasts.repository
 
 import com.zk.justcasts.models.BestPodcastsResponse
 import com.zk.justcasts.models.PodcastResponse
+import com.zk.justcasts.models.SearchResponse
 import org.koin.dsl.module
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -26,4 +27,6 @@ interface NetworkApi {
         @Path("id") podcastId: String
     ): Response<PodcastResponse?>
 
+    @GET("search")
+    suspend fun search(@Query("q") input: String, @Query("type") type: String): Response<SearchResponse?>
 }
