@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.repository.database.ShowsDatabase
@@ -21,13 +22,8 @@ import com.zk.justcasts.screens.show.views.ShowFragmentDirections
 import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
 import kotlinx.coroutines.launch
 
-class ShowViewModel(private val database: ShowsDatabase, private val repository: Repository) : ViewModel() {
-
-    private val viewStateLD = MutableLiveData<ViewState>()
-    private val viewEffectLD = MutableLiveData<ViewEffect>()
-
-    val viewState: LiveData<ViewState> get() = viewStateLD
-    val viewEffects: LiveData<ViewEffect> get() = viewEffectLD
+class ShowViewModel(private val database: ShowsDatabase, private val repository: Repository) :
+    BaseViewModel<ViewState, ViewEffect, Event, Result>(ViewState()){
 
     private var currentViewState = ViewState()
         set(value) {
@@ -35,12 +31,7 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
             viewStateLD.value = value
         }
 
-    fun onEvent(event: Event) {
-        Log.d("Zivi","----- event ${event.javaClass.simpleName}")
-        eventToResult(event)
-    }
-
-    private fun eventToResult(event: Event) {
+    override fun eventToResult(event: Event) {
         when (event) {
             is Event.ScreenLoad -> { onScreenLoad(event.data) }
             is Event.AddToMyShows -> { onAddToMyShows(event.item) }
@@ -88,10 +79,12 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
-    private fun resultToViewState(result: Lce<Result>) {
+    override fun resultToViewState(result: Lce<Result>) {
         Log.d("Zivi", "----- result $result")
 
         currentViewState = when (result) {
+            is Lce.Loading -> currentViewState.copy(/*loading state*/)
+            is Lce.Error -> currentViewState.copy(/*error state with 'it'*/)
             is Lce.Content -> {
                 when (result.packet) {
                     is Result.GetEpisodes -> currentViewState.copy(episodes = result.packet.episodes)
@@ -99,17 +92,10 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
                 }
             }
 
-            is Lce.Loading -> {
-                currentViewState.copy(/*loading state*/)
-            }
-
-            is Lce.Error -> {
-                currentViewState.copy(/*error state with 'it'*/)
-            }
         }
     }
 
-    private fun resultToViewEffect(result: Lce<Result>){
+    override fun resultToViewEffect(result: Lce<Result>){
         var effect: ViewEffect? = ViewEffect.NoEffect
         when (result) {
             is Lce.Content -> {

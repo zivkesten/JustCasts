@@ -69,6 +69,7 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     private fun setupBinding() {
         binding.coordinator.transitionName = args.transitionName
+        binding.floatingActionButton.setOnClickListener { viewModel.onEvent(Event.AddToMyShows(args.data)) }
         Picasso.get()
             .load(args.data.image)
             .into(binding.showCover, object: Callback {
@@ -102,6 +103,7 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
     private fun trigger(effect: ViewEffect) {
         when(effect) {
             is ViewEffect.NoEffect -> Log.d("Zivi", "no effect")
+            is ViewEffect.ShowAddToFavConfirmation -> Snackbar.make(binding.coordinator, "$effect.podcastAdded.title was added to favourites", Snackbar.LENGTH_SHORT).show()
             is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
         }
     }

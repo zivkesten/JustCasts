@@ -1,7 +1,11 @@
 package com.zk.justcasts.screens.search.viewModel
 
 import android.util.Log
+import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
@@ -9,6 +13,7 @@ import com.zk.justcasts.screens.search.model.Event
 import com.zk.justcasts.screens.search.model.Result
 import com.zk.justcasts.screens.search.model.ViewEffect
 import com.zk.justcasts.screens.search.model.ViewState
+import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
 import kotlinx.coroutines.launch
 
 class SearchViewModel(val repository: Repository)
@@ -24,7 +29,15 @@ class SearchViewModel(val repository: Repository)
         when (event) {
             is Event.ScreenLoad -> { onScreenLoad() }
             is Event.SearchTextInput -> { onSearchTextInput(event.text) }
+            is Event.ItemClicked -> { onItemClick(event.item, event.sharedElement) }
         }
+    }
+
+    private fun onItemClick(item: PodcastDTO, sharedElement: View) {
+        val result = Result.ItemClickedResult(item, sharedElement)
+        val lceOfResult: Lce.Content<Result> = Lce.Content(result)
+        resultToViewEffect(lceOfResult)
+        resultToViewState(lceOfResult)
     }
 
     private fun onScreenLoad() {
@@ -79,10 +92,23 @@ class SearchViewModel(val repository: Repository)
             is Lce.Content -> {
                 when (result.packet)  {
                     is Result.SearchTextInputResult -> effect = ViewEffect.NoEffect
+                    is Result.ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
                 }
             }
         }
         Log.d("Zivi", "resultToViewEffect $effect")
         viewEffectLD.value = effect
+    }
+
+    private fun itemClickToViewEffect(it: Result.ItemClickedResult): ViewEffect.TransitionToScreenWithElement? {
+        var directions: ViewEffect.TransitionToScreenWithElement? = null
+        val sharedElement = it.sharedElement
+        val item = it.item
+        ViewCompat.getTransitionName(sharedElement)?.let { transitionName ->
+            val extras = FragmentNavigatorExtras(sharedElement to transitionName)
+            val direction = MyShowsFragmentDirections.selectShow(item, transitionName)
+            directions = ViewEffect.TransitionToScreenWithElement(extras, direction)
+        }
+        return directions
     }
 }

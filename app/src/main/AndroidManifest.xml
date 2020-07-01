@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".CastsApplication">
-        <activity android:name="com.zk.justcasts.main.views.MainActivity">
+        <activity android:name="com.zk.justcasts.main.views.MainActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -9,6 +9,7 @@ import com.zk.justcasts.presentation.base.BaseEvent
 import com.zk.justcasts.presentation.base.BaseResult
 import com.zk.justcasts.presentation.base.BaseViewEffect
 import com.zk.justcasts.presentation.base.BaseViewState
+import com.zk.justcasts.repository.database.podcast.PodcastEntity
 
 
 data class ViewState (
@@ -29,6 +30,6 @@ sealed class Event: BaseEvent {
 
 sealed class Result: BaseResult {
     object ScreenLoadResult : Result()
-    data class GetPodcastsResult(val podcastsResponse: BestPodcastsResponse) : Result()
+    data class GetPodcastsResult(val podcastsResponse: List<PodcastEntity>) : Result()
     data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

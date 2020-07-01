@@ -1,6 +1,8 @@
 package com.zk.justcasts.screens.search.model
 
 import android.view.View
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.FragmentNavigator
 import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.base.BaseEvent
@@ -15,7 +17,7 @@ data class ViewState(
 
 sealed class ViewEffect: BaseViewEffect {
     object NoEffect: ViewEffect()
-    object TransitionToScreenWithElement : ViewEffect()
+    data class TransitionToScreenWithElement(val extras: FragmentNavigator.Extras, val direction: NavDirections) : ViewEffect()
 }
 
 sealed class Event: BaseEvent {
@@ -28,4 +30,5 @@ sealed class Result: BaseResult {
    object ScreeLoad: Result()
    data class SearchTextInputResult(val text: String): Result()
    data class SearchResults(val searchResults: List<PodcastDTO>): Result()
+   data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

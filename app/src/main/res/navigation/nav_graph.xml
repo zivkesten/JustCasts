@@ -42,7 +42,20 @@
         android:id="@+id/searchFragment"
         android:name="com.zk.justcasts.screens.search.views.SearchFragment"
         android:label="playlists_fragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/selectShow"
+            app:destination="@id/showFragment"
+            app:popUpTo="@id/searchFragment">
+            <argument
+                android:name="data"
+                app:argType="com.zk.justcasts.models.PodcastDTO"/>
+            <argument
+                android:name="transitionName"
+                app:argType="string"/>
+        </action>
+
+    </fragment>
 
     <fragment
         android:id="@+id/showFragment"
