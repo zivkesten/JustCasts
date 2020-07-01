@@ -17,35 +17,70 @@
             app:popUpTo="@id/showsFragment">
             <argument
                 android:name="data"
-                app:argType="com.zk.justcasts.models.PodcastDTO" />
+                app:argType="com.zk.justcasts.models.PodcastDTO"/>
             <argument
                 android:name="transitionName"
-                app:argType="string" />
+                app:argType="string"/>
         </action>
+
     </fragment>
+
     <fragment
         android:id="@+id/listenNowFragment"
         android:name="com.zk.justcasts.screens.listenNow.views.ListenNowFragment"
         android:label="albums_fragment"
         tools:layout="@layout/fragment_listen_now" >
+        <argument
+            android:name="episode"
+            app:argType="com.zk.justcasts.models.EpisodeDTO"/>
+        <argument
+            android:name="transitionName"
+            app:argType="string"/>
     </fragment>
+
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.zk.justcasts.screens.search.views.SearchFragment"
         android:label="playlists_fragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/selectShow"
+            app:destination="@id/showFragment"
+            app:popUpTo="@id/searchFragment">
+            <argument
+                android:name="data"
+                app:argType="com.zk.justcasts.models.PodcastDTO"/>
+            <argument
+                android:name="transitionName"
+                app:argType="string"/>
+        </action>
+
+    </fragment>
+
     <fragment
         android:id="@+id/showFragment"
         android:name="com.zk.justcasts.screens.show.views.ShowFragment"
         android:label="show_fragment"
         tools:layout="@layout/show_fragment">
+
+        <action
+            android:id="@+id/selectEpisode"
+            app:destination="@id/listenNowFragment"
+            app:popUpTo="@id/showFragment">
+            <argument
+                android:name="episode"
+                app:argType="com.zk.justcasts.models.EpisodeDTO"/>
+            <argument
+                android:name="transitionName"
+                app:argType="string"/>
+        </action>
+
         <argument
             android:name="data"
-            app:argType="com.zk.justcasts.models.PodcastDTO"
-            />
+            app:argType="com.zk.justcasts.models.PodcastDTO"/>
         <argument
             android:name="transitionName"
-            app:argType="string" />
+            app:argType="string"/>
     </fragment>
 
 </navigation>

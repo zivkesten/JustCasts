@@ -22,19 +22,20 @@ class MainActivityViewModel: ViewModel() {
 
     fun event(event: Event) {
         when (event) {
-            is Event.Navigation -> {
-                val visibility: Int =
-                    when (event.destinationId) {
-                        R.id.showFragment -> {
-                            View.GONE
-                        }
-                        else -> {
-                            View.VISIBLE
-                        }
-                    }
-                viewAction.postValue(ViewEffect.AnimateNavigationViewVisibility(visibility = visibility))
-
-            }
+            is Event.Navigation ->  onNavigationEvent(event)
         }
+    }
+
+    private fun onNavigationEvent(event: Event.Navigation) {
+        val visibility: Int =
+            when (event.destinationId) {
+                R.id.showFragment -> {
+                    View.GONE
+                }
+                else -> {
+                    View.VISIBLE
+                }
+            }
+        viewAction.postValue(ViewEffect.AnimateNavigationViewVisibility(visibility = visibility))
     }
 }

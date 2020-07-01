@@ -3,29 +3,23 @@ package com.zk.justcasts.screens.shows.viewModel
 import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
+import com.zk.justcasts.repository.database.ShowsDatabase
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.Result
 import com.zk.justcasts.screens.shows.model.Result.ItemClickedResult
 import com.zk.justcasts.screens.shows.model.ViewEffect
 import com.zk.justcasts.screens.shows.model.ViewState
 import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class MyShowsViewModel(private val repository: Repository): ViewModel() {
-
-    private val viewStateLD = MutableLiveData<ViewState>()
-    private val viewEffectLD = MutableLiveData<ViewEffect>()
-    val viewState: LiveData<ViewState> get() = viewStateLD
-    val viewEffects: LiveData<ViewEffect> get() = viewEffectLD
+class MyShowsViewModel(private val dataBase: ShowsDatabase):
+    BaseViewModel<ViewState, ViewEffect, Event, Result>(ViewState()) {
 
     private var currentViewState = ViewState()
         set(value) {
@@ -33,30 +27,23 @@ class MyShowsViewModel(private val repository: Repository): ViewModel() {
             viewStateLD.value = value
         }
 
-    private var loadFromBEJob: Job? = null
-
-    fun onEvent(event: Event) {
-        Log.d("Zivi","----- event ${event.javaClass.simpleName}")
-        eventToResult(event)
-    }
-
-    private fun eventToResult(event: Event) {
+    override fun eventToResult(event: Event) {
         when (event) {
-            is Event.SwipeToRefreshEvent, Event.ScreenLoad -> { loadFromApi() }
+            is Event.SwipeToRefreshEvent, Event.ScreenLoad -> { loadFromCache() }
             is Event.ItemClicked -> { onItemClick(event.item, event.SharedElement) }
         }
     }
 
-    private fun loadFromApi() {
+    private fun loadFromCache() {
         resultToViewState(Lce.Loading())
         if (loadFromBEJob?.isActive == true) loadFromBEJob?.cancel()
 
         loadFromBEJob = viewModelScope.launch {
-            val response = repository.getPodcastsASync()
-            val result: Lce<Result> = if (response.errorMessage?.isEmpty() == false) {
-                Lce.Error(Result.GetPodcastsResult(response))
+            val myShows = dataBase.podcastDao().getAll()
+            val result: Lce<Result> = if (myShows.isEmpty()) {
+                Lce.Error(Result.GetPodcastsResult(myShows))
             } else {
-                Lce.Content(Result.GetPodcastsResult(response))
+                Lce.Content(Result.GetPodcastsResult(myShows))
             }
             resultToViewState(result)
         }
@@ -72,39 +59,26 @@ class MyShowsViewModel(private val repository: Repository): ViewModel() {
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
-    private fun resultToViewState(result: Lce<Result>) {
+    override fun resultToViewState(result: Lce<Result>) {
         Log.d("Zivi", "----- result $result")
 
         currentViewState = when (result) {
+            is Lce.Loading -> currentViewState.copy(/*loading state*/)
+            is Lce.Error -> currentViewState.copy(/*error state with 'it'*/)
             is Lce.Content -> {
                 when (result.packet) {
-                    is Result.ScreenLoadResult -> {
-                        currentViewState.copy()
-                    }
+                    is Result.ScreenLoadResult ->  currentViewState.copy()
+                    is ItemClickedResult -> currentViewState.copy()
                     is Result.GetPodcastsResult -> {
-                        val podcasts = result.packet.podcastsResponse.podcasts
-                        currentViewState.copy(
-                            itemList = podcasts
-                        )
-                    }
-
-                    is ItemClickedResult -> {
-                        currentViewState.copy()
+                        val podcasts = result.packet.podcastsResponse
+                        currentViewState.copy(itemList = podcasts.map { it.dto()})
                     }
                 }
-            }
-
-            is Lce.Loading -> {
-                currentViewState.copy(/*loading state*/)
-            }
-
-            is Lce.Error -> {
-                currentViewState.copy(/*error state with 'it'*/)
             }
         }
     }
 
-    private fun resultToViewEffect(result: Lce<Result>){
+    override fun resultToViewEffect(result: Lce<Result>){
         var effect: ViewEffect? = ViewEffect.NoEffect
         when (result) {
             is Lce.Content -> {

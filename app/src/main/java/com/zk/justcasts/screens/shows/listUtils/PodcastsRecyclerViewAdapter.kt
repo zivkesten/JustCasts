@@ -13,18 +13,18 @@ import com.zk.justcasts.screens.shows.OnItemClickListener
 class PodcastsRecyclerViewAdapter(private var values: List<PodcastDTO> = ArrayList(), private val listener: OnItemClickListener) : RecyclerView.Adapter<PodcastsRecyclerViewAdapter.ViewHolder>() {
 
     fun update(items: List<PodcastDTO>) {
-        if (values.isEmpty()) {
+       //if (values.isEmpty()) {
             values = items
             notifyDataSetChanged()
-            return
-        }
-        val diffResult = DiffUtil.calculateDiff(
-            PodcastListDiffUtil(
-                values,
-                items
-            )
-        )
-        diffResult.dispatchUpdatesTo(this)
+        //    return
+       // }
+      //  val diffResult = DiffUtil.calculateDiff(
+      //      PodcastListDiffUtil(
+       //         values,
+      //          items
+      //      )
+      //  )
+      //  diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

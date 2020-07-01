@@ -2,11 +2,12 @@ package com.zk.justcasts.repository
 
 import android.util.Log
 import com.google.gson.Gson
-import com.zk.justcasts.models.BestPodcastsResponse
+import com.zk.justcasts.models.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.dsl.module
 import java.io.IOException
+import java.lang.NullPointerException
 
 val repositoryModule = module {
 
@@ -15,7 +16,7 @@ val repositoryModule = module {
 
 class Repository(private val networkApi: NetworkApi)  {
 
-    private val searchError = "Error searching for movie"
+    private val searchError = "Error searching"
 
     suspend fun getPodcastsASync(): BestPodcastsResponse {
         var podcastsResponse = BestPodcastsResponse(errorMessage = searchError)
@@ -31,9 +32,53 @@ class Repository(private val networkApi: NetworkApi)  {
                     )
                 }
             } catch (ex: IOException) {
-                Log.w("Zivi", "search Movie fail", ex)
+                Log.w("Zivi", "get best podcasts fail", ex)
             }
         }
         return podcastsResponse
+    }
+
+    suspend fun getEpisodesASync(podcastsId: String): List<EpisodeDTO>? {
+        var podcast = PodcastResponse(errorMessage = searchError)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = networkApi.getEpisodes(podcastsId)
+                response.body()?.let {
+                    Log.w("Zivi", "episodesd response $it")
+                    podcast = it
+                }
+
+                response.errorBody()?.let { body ->
+                    podcast = Gson().fromJson(body.string(), PodcastResponse::class.java)
+                }
+            } catch (ex: IOException) {
+                Log.w("Zivi", "get episodes fail", ex)
+            } catch (ex: NullPointerException) {
+                Log.w("Zivi", "get episodes fail", ex)
+            }
+        }
+        return podcast.episodes
+    }
+
+    suspend fun search(text: String): List<PodcastDTO>? {
+        var searchResponse = SearchResponse(errorMessage = searchError)
+        withContext(Dispatchers.IO) {
+            try {
+                val response = networkApi.search(text, "podcast")
+                response.body()?.let {
+                    Log.w("Zivi", "search response $it")
+                    searchResponse = it
+                }
+
+                response.errorBody()?.let { body ->
+                    searchResponse = Gson().fromJson(body.string(), SearchResponse::class.java)
+                }
+            } catch (ex: IOException) {
+                Log.w("Zivi", "search fail", ex)
+            } catch (ex: NullPointerException) {
+                Log.w("Zivi", "search fail", ex)
+            }
+        }
+        return searchResponse.results
     }
 }

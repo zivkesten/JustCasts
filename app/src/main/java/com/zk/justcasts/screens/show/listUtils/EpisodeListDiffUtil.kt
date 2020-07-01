@@ -1,9 +1,9 @@
-package com.zk.justcasts.screens.shows.listUtils
+package com.zk.justcasts.screens.show.listUtils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.zk.justcasts.models.Episode
+import com.zk.justcasts.models.EpisodeDTO
 
-class EpisodeListDiffUtil(private var newItems: List<Episode>, private var oldItems: List<Episode>) :
+class EpisodeListDiffUtil(private var newItems: List<EpisodeDTO>, private var oldItems: List<EpisodeDTO>) :
     DiffUtil.Callback() {
 
     override fun getOldListSize(): Int {

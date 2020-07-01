@@ -5,26 +5,31 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.FragmentNavigator
 import com.zk.justcasts.models.BestPodcastsResponse
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.base.BaseEvent
+import com.zk.justcasts.presentation.base.BaseResult
+import com.zk.justcasts.presentation.base.BaseViewEffect
+import com.zk.justcasts.presentation.base.BaseViewState
+import com.zk.justcasts.repository.database.podcast.PodcastEntity
 
 
 data class ViewState (
     val itemList: List<PodcastDTO> = emptyList()
-)
+): BaseViewState
 
-sealed class ViewEffect {
+sealed class ViewEffect: BaseViewEffect {
     object NoEffect: ViewEffect()
     data class TransitionToScreenWithElement(val extras: FragmentNavigator.Extras, val direction: NavDirections) : ViewEffect()
     data class ShowVisualResultForAddToFavourites(val message: String): ViewEffect()
 }
 
-sealed class Event {
+sealed class Event: BaseEvent {
     object ScreenLoad:  Event()
     object SwipeToRefreshEvent: Event()
     data class ItemClicked(val item: PodcastDTO, val SharedElement: View): Event()
 }
 
-sealed class Result {
+sealed class Result: BaseResult {
     object ScreenLoadResult : Result()
-    data class GetPodcastsResult(val podcastsResponse: BestPodcastsResponse) : Result()
+    data class GetPodcastsResult(val podcastsResponse: List<PodcastEntity>) : Result()
     data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

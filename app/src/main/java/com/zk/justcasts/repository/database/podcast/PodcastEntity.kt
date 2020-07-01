@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.SerializedName
 import com.zk.justcasts.models.BaseEntity
 import com.zk.justcasts.models.Extra
+import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.repository.database.Converters
 import java.util.*
 
@@ -34,4 +35,10 @@ data class PodcastEntity(
     @ColumnInfo(name = "total_episodes") val total_episodes: Int?,
     @ColumnInfo(name = "explicit_content") val explicit_content: Boolean?,
     @ColumnInfo(name = "latest_pub_date_ms") val latest_pub_date_ms: Long?
-): BaseEntity
+): BaseEntity {
+    fun dto(): PodcastDTO {
+        return PodcastDTO(id?: "", rss, type, email, /*extra,*/ image, title, country,
+            website, language, /*genre_ids,*/ emptyList(), itunes_id,
+            publisher, thumbnail, is_claimed, description, total_episodes, explicit_content, latest_pub_date_ms)
+    }
+}

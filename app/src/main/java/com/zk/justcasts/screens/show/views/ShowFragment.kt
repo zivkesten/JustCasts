@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
@@ -17,14 +18,14 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.R
 import com.zk.justcasts.databinding.ShowFragmentBinding
-import com.zk.justcasts.models.Episode
+import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.presentation.extensions.observe
 import com.zk.justcasts.screens.show.model.Event
 import com.zk.justcasts.screens.show.model.ViewEffect
 import com.zk.justcasts.screens.show.model.ViewState
 import com.zk.justcasts.screens.show.viewModel.ShowViewModel
-import com.zk.justcasts.screens.shows.listUtils.EpisodesRecyclerViewAdapter
-import com.zk.justcasts.screens.shows.listUtils.OnEpisodeClickListener
+import com.zk.justcasts.screens.show.listUtils.EpisodesRecyclerViewAdapter
+import com.zk.justcasts.screens.show.listUtils.OnEpisodeClickListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ShowFragment : Fragment(), OnEpisodeClickListener {
@@ -61,7 +62,14 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = ShowFragmentBinding.inflate(inflater, container, false)
+        setupBinding()
+        viewModel.onEvent(Event.ScreenLoad(args.data))
+        return binding.root
+    }
+
+    private fun setupBinding() {
         binding.coordinator.transitionName = args.transitionName
+        binding.floatingActionButton.setOnClickListener { viewModel.onEvent(Event.AddToMyShows(args.data)) }
         Picasso.get()
             .load(args.data.image)
             .into(binding.showCover, object: Callback {
@@ -74,12 +82,8 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
                 }
             })
         binding.collapsingToolbar.title = args.data.title
-        return binding.root
-    }
-
-    private fun setupBinding() {
         binding.episodeList.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = LinearLayoutManager(context)
             adapter = episodeAdapter
         }
     }
@@ -92,23 +96,19 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
     }
 
     private fun render(state: ViewState) {
-
+        state.episodes?.let { episodeAdapter.update(it) }
+        Log.d("Zivi", "----- viewState $state")
     }
 
     private fun trigger(effect: ViewEffect) {
         when(effect) {
-            is ViewEffect.ShowAddToFavConfirmation ->  {
-                Log.d("Zivi", "Added to favourites ${effect.podcastAdded.title}")
-                val rootView: View = requireActivity().window.decorView.findViewById(android.R.id.content)
-
-                Snackbar.make(rootView, effect.podcastAdded.title + "Was added", Snackbar.LENGTH_LONG).show()
-            }
             is ViewEffect.NoEffect -> Log.d("Zivi", "no effect")
-            is ViewEffect.TransitionToScreenWithElement -> TODO()
+            is ViewEffect.ShowAddToFavConfirmation -> Snackbar.make(binding.coordinator, "$effect.podcastAdded.title was added to favourites", Snackbar.LENGTH_SHORT).show()
+            is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
         }
     }
 
-    override fun onItemClick(item: Episode, sharedElement: View) {
-        Log.d("Zivi", "clicked episode ${item.title}")
+    override fun onItemClick(item: EpisodeDTO, sharedElement: View) {
+        viewModel.onEvent(Event.ListItemClicked(item, sharedElement))
     }
 }

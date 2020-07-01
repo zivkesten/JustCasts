@@ -1,11 +1,16 @@
 package com.zk.justcasts.screens.show.viewModel
 
 import android.util.Log
+import android.view.View
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.repository.database.ShowsDatabase
@@ -13,15 +18,12 @@ import com.zk.justcasts.screens.show.model.Event
 import com.zk.justcasts.screens.show.model.Result
 import com.zk.justcasts.screens.show.model.ViewEffect
 import com.zk.justcasts.screens.show.model.ViewState
+import com.zk.justcasts.screens.show.views.ShowFragmentDirections
+import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
 import kotlinx.coroutines.launch
 
-class ShowViewModel(private val database: ShowsDatabase, private val repository: Repository) : ViewModel() {
-
-    private val viewStateLD = MutableLiveData<ViewState>()
-    private val viewEffectLD = MutableLiveData<ViewEffect>()
-
-    val viewState: LiveData<ViewState> get() = viewStateLD
-    val viewEffects: LiveData<ViewEffect> get() = viewEffectLD
+class ShowViewModel(private val database: ShowsDatabase, private val repository: Repository) :
+    BaseViewModel<ViewState, ViewEffect, Event, Result>(ViewState()){
 
     private var currentViewState = ViewState()
         set(value) {
@@ -29,16 +31,29 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
             viewStateLD.value = value
         }
 
-    fun onEvent(event: Event) {
-        Log.d("Zivi","----- event ${event.javaClass.simpleName}")
-        eventToResult(event)
+    override fun eventToResult(event: Event) {
+        when (event) {
+            is Event.ScreenLoad -> { onScreenLoad(event.data) }
+            is Event.AddToMyShows -> { onAddToMyShows(event.item) }
+            is Event.ListItemClicked -> { onItemClick(event.item, event.sharedElement) }
+        }
     }
 
-    private fun eventToResult(event: Event) {
-        when (event) {
-            is Event.ScreenLoad -> { Log.d("Zivi", "Screen load ${javaClass.simpleName}") }
-            is Event.AddToMyShows -> { onAddToMyShows(event.item) }
+    private fun onScreenLoad(item: PodcastDTO) {
+        resultToViewEffect(Lce.Loading())
+        resultToViewState(Lce.Loading())
+        viewModelScope.launch {
+            val episodes = repository.getEpisodesASync(item.id)
+            Log.d("Zivi", "episodes: $episodes")
+            resultToViewState(Lce.Content(Result.GetEpisodes(episodes)))
         }
+    }
+
+    private fun onItemClick(item: EpisodeDTO, sharedElement: View) {
+        val result = Result.ItemClickedResult(item, sharedElement)
+        val lceOfResult: Lce.Content<Result> = Lce.Content(result)
+        resultToViewEffect(lceOfResult)
+        resultToViewState(lceOfResult)
     }
 
     private fun onAddToMyShows(item: PodcastDTO) {
@@ -61,37 +76,32 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         }
     }
 
-
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
-    private fun resultToViewState(result: Lce<Result>) {
+    override fun resultToViewState(result: Lce<Result>) {
         Log.d("Zivi", "----- result $result")
 
         currentViewState = when (result) {
+            is Lce.Loading -> currentViewState.copy(/*loading state*/)
+            is Lce.Error -> currentViewState.copy(/*error state with 'it'*/)
             is Lce.Content -> {
                 when (result.packet) {
-                    is Result.ScreenLoad -> currentViewState.copy()
+                    is Result.GetEpisodes -> currentViewState.copy(episodes = result.packet.episodes)
                     else -> currentViewState.copy()
                 }
             }
 
-            is Lce.Loading -> {
-                currentViewState.copy(/*loading state*/)
-            }
-
-            is Lce.Error -> {
-                currentViewState.copy(/*error state with 'it'*/)
-            }
         }
     }
 
-    private fun resultToViewEffect(result: Lce<Result>){
+    override fun resultToViewEffect(result: Lce<Result>){
         var effect: ViewEffect? = ViewEffect.NoEffect
         when (result) {
             is Lce.Content -> {
                 when (result.packet)  {
                     is Result.ShowAddToFavConfirmation -> effect = ViewEffect.ShowAddToFavConfirmation(result.packet.podcastAdded)
+                    is Result.ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
                 }
             }
         }
@@ -99,17 +109,15 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         viewEffectLD.value = effect
     }
 
-//    private fun itemClickToViewEffect(it: Result.ItemClickedResult): com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement? {
-//        var directions: com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement? = null
-//        val sharedElement = it.sharedElement
-//        val item = it.item
-//        ViewCompat.getTransitionName(sharedElement)?.let { transitionName ->
-//            val extras = FragmentNavigatorExtras(sharedElement to transitionName)
-//            val direction = MyShowsFragmentDirections.selectShow(item, transitionName)
-//            directions = com.zk.justcasts.screens.shows.model.ViewEffect.TransitionToScreenWithElement(extras, direction)
-//        }
-//        return directions
-//    }
-
-
+    private fun itemClickToViewEffect(it: Result.ItemClickedResult): ViewEffect.TransitionToScreenWithElement? {
+        var directions: ViewEffect.TransitionToScreenWithElement? = null
+        val sharedElement = it.sharedElement
+        val item = it.item
+        ViewCompat.getTransitionName(sharedElement)?.let { transitionName ->
+            val extras = FragmentNavigatorExtras(sharedElement to transitionName)
+            val direction = ShowFragmentDirections.selectEpisode(item, transitionName)
+            directions = ViewEffect.TransitionToScreenWithElement(extras, direction)
+        }
+        return directions
+    }
 }

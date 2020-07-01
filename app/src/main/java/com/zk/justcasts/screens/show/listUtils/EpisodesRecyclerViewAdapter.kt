@@ -1,4 +1,4 @@
-package com.zk.justcasts.screens.shows.listUtils
+package com.zk.justcasts.screens.show.listUtils
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.zk.justcasts.databinding.ListItemEpisodeBinding
-import com.zk.justcasts.models.Episode
+import com.zk.justcasts.models.EpisodeDTO
+import com.zk.justcasts.screens.show.listUtils.EpisodeListDiffUtil
 
-class EpisodesRecyclerViewAdapter(private var values: List<Episode> = ArrayList(), private val listener: OnEpisodeClickListener) : RecyclerView.Adapter<EpisodesRecyclerViewAdapter.ViewHolder>() {
+class EpisodesRecyclerViewAdapter(private var values: List<EpisodeDTO> = ArrayList(), private val listener: OnEpisodeClickListener) : RecyclerView.Adapter<EpisodesRecyclerViewAdapter.ViewHolder>() {
 
-    fun update(items: List<Episode>) {
+    fun update(items: List<EpisodeDTO>) {
         if (values.isEmpty()) {
             values = items
             notifyDataSetChanged()
@@ -39,7 +40,7 @@ class EpisodesRecyclerViewAdapter(private var values: List<Episode> = ArrayList(
     }
 
     inner class ViewHolder(private val binding: ListItemEpisodeBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Episode) {
+        fun bind(item: EpisodeDTO) {
             with(binding) {
                 episodeTitle.text = item.title
                 episodeLayout.transitionName = "card$adapterPosition"
@@ -56,5 +57,5 @@ class EpisodesRecyclerViewAdapter(private var values: List<Episode> = ArrayList(
 }
 
 interface OnEpisodeClickListener {
-    fun onItemClick(item: Episode, sharedElement: View)
+    fun onItemClick(item: EpisodeDTO, sharedElement: View)
 }

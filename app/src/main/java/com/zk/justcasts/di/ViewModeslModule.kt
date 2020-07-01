@@ -13,7 +13,7 @@ class ViewModelsModule {
 		val modules = module {
 			viewModel { MainActivityViewModel() }
 			viewModel { MyShowsViewModel(get()) }
-			viewModel { SearchViewModel() }
+			viewModel { SearchViewModel(get()) }
 			viewModel { ListenNowViewModel() }
 			viewModel { ShowViewModel(get(), get()) }
 
