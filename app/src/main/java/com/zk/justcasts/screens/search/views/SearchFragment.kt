@@ -69,7 +69,7 @@ class SearchFragment: Fragment(), OnItemClickListener {
     private fun setupBinding() {
         binding.searchPodcasts.onTextChanged { handleSearchInput(it) }
         binding.searchedPodcasts.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = NpaGridLayoutManager(context, 2)
             adapter = showsAdapter
         }
     }

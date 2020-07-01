@@ -6,6 +6,7 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.zk.justcasts.models.PodcastDTO
+import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.screens.shows.model.Event

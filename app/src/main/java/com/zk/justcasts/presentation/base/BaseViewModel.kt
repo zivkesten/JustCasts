@@ -1,12 +1,10 @@
-package com.zk.justcasts.screens.shows.viewModel
+package com.zk.justcasts.presentation.base
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.zk.justcasts.repository.Lce
-import com.zk.justcasts.screens.shows.model.Event
-import com.zk.justcasts.screens.shows.model.Result
 import kotlinx.coroutines.Job
 
 abstract class BaseViewModel<ViewState : BaseViewState,

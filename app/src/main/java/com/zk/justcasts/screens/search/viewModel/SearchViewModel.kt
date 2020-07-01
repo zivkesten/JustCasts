@@ -1,10 +1,8 @@
 package com.zk.justcasts.screens.search.viewModel
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
 import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.screens.search.model.Event
@@ -13,12 +11,8 @@ import com.zk.justcasts.screens.search.model.ViewEffect
 import com.zk.justcasts.screens.search.model.ViewState
 import kotlinx.coroutines.launch
 
-class SearchViewModel(val repository: Repository): ViewModel() {
-    private val viewStateLD = MutableLiveData<ViewState>()
-    private val viewEffectLD = MutableLiveData<ViewEffect>()
-
-    val viewState: LiveData<ViewState> get() = viewStateLD
-    val viewEffects: LiveData<ViewEffect> get() = viewEffectLD
+class SearchViewModel(val repository: Repository)
+    : BaseViewModel<ViewState, ViewEffect, Event, Result>(ViewState()){
 
     private var currentViewState = ViewState()
         set(value) {
@@ -26,12 +20,7 @@ class SearchViewModel(val repository: Repository): ViewModel() {
             viewStateLD.value = value
         }
 
-    fun onEvent(event: Event) {
-        Log.d("Zivi","----- event ${event.javaClass.simpleName}")
-        eventToResult(event)
-    }
-
-    private fun eventToResult(event: Event) {
+    override fun eventToResult(event: Event) {
         when (event) {
             is Event.ScreenLoad -> { onScreenLoad() }
             is Event.SearchTextInput -> { onSearchTextInput(event.text) }
@@ -40,7 +29,7 @@ class SearchViewModel(val repository: Repository): ViewModel() {
 
     private fun onScreenLoad() {
         resultToViewEffect(Lce.Loading())
-        //resultToViewState(Lce.Loading())
+        resultToViewState(Lce.Loading())
         viewModelScope.launch {
             val podcastsResponse = repository.getPodcastsASync()
             resultToViewState(Lce.Content(Result.SearchResults(podcastsResponse.podcasts)))
@@ -61,8 +50,8 @@ class SearchViewModel(val repository: Repository): ViewModel() {
     // -----------------------------------------------------------------------------------
     // Internal helpers
 
-    private fun resultToViewState(result: Lce<Result>) {
-        Log.d("Zivi", "----- result $result")
+    override fun resultToViewState(result: Lce<Result>) {
+        Log.d("zorg", "----- result $result")
 
         currentViewState = when (result) {
             is Lce.Content -> {
@@ -84,7 +73,7 @@ class SearchViewModel(val repository: Repository): ViewModel() {
         }
     }
 
-    private fun resultToViewEffect(result: Lce<Result>){
+    override fun resultToViewEffect(result: Lce<Result>){
         var effect: ViewEffect? = ViewEffect.NoEffect
         when (result) {
             is Lce.Content -> {

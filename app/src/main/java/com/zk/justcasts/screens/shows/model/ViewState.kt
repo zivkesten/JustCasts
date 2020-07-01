@@ -5,10 +5,10 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.FragmentNavigator
 import com.zk.justcasts.models.BestPodcastsResponse
 import com.zk.justcasts.models.PodcastDTO
-import com.zk.justcasts.screens.shows.viewModel.BaseEvent
-import com.zk.justcasts.screens.shows.viewModel.BaseResult
-import com.zk.justcasts.screens.shows.viewModel.BaseViewEffect
-import com.zk.justcasts.screens.shows.viewModel.BaseViewState
+import com.zk.justcasts.presentation.base.BaseEvent
+import com.zk.justcasts.presentation.base.BaseResult
+import com.zk.justcasts.presentation.base.BaseViewEffect
+import com.zk.justcasts.presentation.base.BaseViewState
 
 
 data class ViewState (
