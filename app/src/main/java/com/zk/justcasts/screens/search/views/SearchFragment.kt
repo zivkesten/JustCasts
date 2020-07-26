@@ -22,16 +22,13 @@ import com.zk.justcasts.screens.shows.OnItemClickListener
 import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment: Fragment(), OnItemClickListener {
+class SearchFragment: Fragment() {
 
     private lateinit var binding: FragmentSearchBinding
 
     val viewModel by viewModel<SearchViewModel>()
 
-    private val showsAdapter =
-        PodcastsRecyclerViewAdapter(
-            listener = this
-        )
+    private val showsAdapter = PodcastsRecyclerViewAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,11 +74,10 @@ class SearchFragment: Fragment(), OnItemClickListener {
         binding.searchPodcasts.onTextChanged { handleSearchInput(it) }
         binding.searchedPodcasts.apply {
             layoutManager = GridLayoutManager(context, 2)
+            showsAdapter.setDebounceClickListener { item, sharedElement ->
+                viewModel.onEvent(Event.ItemClicked(item, sharedElement))
+            }
             adapter = showsAdapter
         }
-    }
-
-    override fun onItemClick(item: PodcastDTO, sharedElement: View) {
-        viewModel.onEvent(Event.ItemClicked(item, sharedElement))
     }
 }

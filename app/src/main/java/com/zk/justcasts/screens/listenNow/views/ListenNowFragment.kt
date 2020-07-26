@@ -58,7 +58,6 @@ class ListenNowFragment: Fragment() {
     ): View? {
         binding = FragmentListenNowBinding.inflate(inflater, container, false)
         setupBinding()
-        //viewModel.onEvent(Event.ScreenLoad(args.data))
         return binding.root
     }
 
@@ -75,11 +74,6 @@ class ListenNowFragment: Fragment() {
                     startPostponedEnterTransition()
                 }
             })
-//        binding.collapsingToolbar.title = args.data.title
-//        binding.episodeList.apply {
-//            layoutManager = LinearLayoutManager(context)
-//            adapter = episodeAdapter
-//        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

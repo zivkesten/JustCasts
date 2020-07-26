@@ -37,11 +37,9 @@ class SearchViewModel(val repository: Repository)
         val result = Result.ItemClickedResult(item, sharedElement)
         val lceOfResult: Lce.Content<Result> = Lce.Content(result)
         resultToViewEffect(lceOfResult)
-        resultToViewState(lceOfResult)
     }
 
     private fun onScreenLoad() {
-        resultToViewEffect(Lce.Loading())
         resultToViewState(Lce.Loading())
         viewModelScope.launch {
             val podcastsResponse = repository.getPodcastsASync()
@@ -50,7 +48,6 @@ class SearchViewModel(val repository: Repository)
     }
 
     private fun onSearchTextInput(text: String) {
-        resultToViewEffect(Lce.Loading())
         resultToViewState(Lce.Loading())
         viewModelScope.launch {
             val results = repository.search(text)
@@ -71,28 +68,30 @@ class SearchViewModel(val repository: Repository)
                 when (result.packet) {
                     is Result.SearchResults ->
                         currentViewState.copy(
-                            searchResultList = result.packet.searchResults)
+                            searchResultList = result.packet.searchResults,
+                            loadingStateVisibility = View.GONE)
                     else -> currentViewState.copy()
                 }
             }
 
             is Lce.Loading -> {
-                currentViewState.copy(/*loading state*/)
+                currentViewState.copy(loadingStateVisibility = View.VISIBLE)
             }
 
             is Lce.Error -> {
-                currentViewState.copy(/*error state with 'it'*/)
+                currentViewState.copy(
+                    loadingStateVisibility = View.GONE)
             }
         }
     }
 
     override fun resultToViewEffect(result: Lce<Result>){
-        var effect: ViewEffect? = ViewEffect.NoEffect
+        var effect: ViewEffect? = null
         when (result) {
             is Lce.Content -> {
-                when (result.packet)  {
-                    is Result.SearchTextInputResult -> effect = ViewEffect.NoEffect
-                    is Result.ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
+                effect = when (result.packet)  {
+                    is Result.SearchResults, Result.ScreeLoad -> ViewEffect.NoEffect
+                    is Result.ItemClickedResult -> itemClickToViewEffect(result.packet)
                 }
             }
         }

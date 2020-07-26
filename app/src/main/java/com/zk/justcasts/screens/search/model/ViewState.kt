@@ -12,7 +12,8 @@ import com.zk.justcasts.presentation.base.BaseViewState
 
 data class ViewState(
     val searchResultList: List<PodcastDTO>? = emptyList(),
-    val searchText: String? = null
+    val searchText: String? = null,
+    val loadingStateVisibility: Int? = View.GONE
 ): BaseViewState
 
 sealed class ViewEffect: BaseViewEffect {
@@ -28,7 +29,6 @@ sealed class Event: BaseEvent {
 
 sealed class Result: BaseResult {
    object ScreeLoad: Result()
-   data class SearchTextInputResult(val text: String): Result()
    data class SearchResults(val searchResults: List<PodcastDTO>): Result()
    data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

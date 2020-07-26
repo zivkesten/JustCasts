@@ -5,21 +5,33 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion rootProject.compileSdkVersion
+    useLibrary 'android.test.runner'
+
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.zk.justcasts"
-        minSdkVersion 23
-        targetSdkVersion 29
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
+        freeCompilerArgs += [
+                "-Xopt-in=kotlin.RequiresOptIn",
+                "-Xopt-in=kotlin.OptIn"
+        ]
     }
 
     compileOptions {
@@ -61,12 +73,12 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.0'
 
     //UI
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.0"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.0"
     implementation 'com.google.android.material:material:1.3.0-alpha01'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -83,7 +95,7 @@ dependencies {
     //Networking
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
@@ -91,14 +103,40 @@ dependencies {
     //Database
     def room_version = "2.2.5"
     implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    // For Kotlin use kapt instead of annotationProcessor
+    kapt "androidx.room:room-compiler:$room_version"// For Kotlin use kapt instead of annotationProcessor
 
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$room_version"
 
-    //Testing
+    //<--Testing-->
+
+    //Junit
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+
+    //Espresso
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //Core
+    testImplementation 'android.arch.core:core-testing:1.1.1'
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+
+    //Kotlin Tests
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.1.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.7'
+    testImplementation 'com.jraska.livedata:testing-ktx:1.1.2'
+
+    //Mockito
+    testImplementation 'org.mockito:mockito-inline:3.1.0'
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
+    //truth - assertion library
+    testImplementation "com.google.truth:truth:$truthVersion"
+
+    //Roboelectric
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+
 }
