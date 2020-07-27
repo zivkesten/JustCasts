@@ -1,15 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = "1.3.41"
+    ext.kotlinVersion = "1.3.72"
+    ext.navVersion = "2.3.0"
     repositories {
         google()
         jcenter()
     }
     dependencies {
-        def nav_version = "2.3.0-rc01"
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
-        classpath "com.android.tools.build:gradle:4.0.0"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
+        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -36,29 +37,32 @@ ext {
     compileSdkVersion = 28
 
     // App dependencies
-    navVersion = '2.3.0'
-    androidXVersion = '1.0.0'
+    retrofitVersion = '2.9.0'
     androidXTestCoreVersion = '1.2.0'
     androidXTestExtKotlinRunnerVersion = '1.1.1'
-    androidXTestRulesVersion = '1.2.0-beta01'
-    androidXAnnotations = '1.0.1'
-    androidXLegacySupport = '1.0.0'
+    androidXLegacyVersion = '1.0.0'
+    androidXLifecycleExtensionVersion = '2.2.0'
+    androidXLifecycleViewmodelVersion = '2.2.0'
     appCompatVersion = '1.0.2'
-    archLifecycleVersion = '2.2.0-alpha01'
-    archTestingVersion = '2.0.0'
-    cardVersion = '1.0.0'
-    coroutinesVersion = '1.2.1'
-    dexMakerVersion = '2.12.1'
-    espressoVersion = '3.2.0-beta01'
-    fragmentVersion = '1.1.0-alpha07'
-    fragmentKtxVersion = '1.1.0-rc01'
+    archTestingVersion = '2.1.0'
+    espressoVersion = '3.2.0'
     hamcrestVersion = '1.3'
-    junitVersion = '4.12'
-    materialVersion = '1.0.0'
-    mockitoVersion = '2.8.9'
-    recyclerViewVersion = '1.0.0'
+    junitVersion = '4.13'
+    androidxJunitVersion = '1.1.1'
+    kotlinJunit = '1.1.1'
     robolectricVersion = '4.3.1'
-    roomVersion = '2.1.0'
-    rulesVersion = '1.0.1'
     truthVersion = '1.0.1'
+    constraintlayoutVersion = '1.1.3'
+    coordinatorlayoutVersion = '1.1.0'
+    materialVersion = '1.3.0-alpha01'
+    navigationFragmentVersion ='2.3.0'
+    navigationUIVersion ='2.3.0'
+    koinVersion = '2.1.5'
+    logInterceptorVersion = '4.7.2'
+    picassoVersion = '2.71828'
+    roomVersion = '2.2.5'
+    mockitokotlinVersion = '2.2.0'
+    mockitoInlineVersion = '3.1.0'
+    liveDataTestVersion = '1.1.2'
+    coroutinTestVersion ='1.3.7'
 }
