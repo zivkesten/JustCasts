@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.zk.justcasts.R
 import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.base.BaseViewModel
 import com.zk.justcasts.repository.Lce
@@ -53,7 +54,6 @@ class MyShowsViewModel(private val dataBase: ShowsDatabase):
         val result = ItemClickedResult(item, sharedElement)
         val lceOfResult: Lce.Content<Result> = Lce.Content(result)
         resultToViewEffect(lceOfResult)
-        resultToViewState(lceOfResult)
     }
 
     // -----------------------------------------------------------------------------------
@@ -63,16 +63,19 @@ class MyShowsViewModel(private val dataBase: ShowsDatabase):
         Log.d("Zivi", "----- result $result")
 
         currentViewState = when (result) {
-            is Lce.Loading -> currentViewState.copy(/*loading state*/)
-            is Lce.Error -> currentViewState.copy(/*error state with 'it'*/)
+            is Lce.Loading -> currentViewState.copy(loadingStateVisibility = View.VISIBLE)
+            is Lce.Error ->{
+                when (result.packet) {
+                    is Result.Error -> currentViewState.copy(errorMessage = result.packet.errorMessage)
+                    else -> currentViewState.copy(errorMessageResource = R.string.unexpectedError)
+                }
+            }
             is Lce.Content -> {
                 when (result.packet) {
-                    is Result.ScreenLoadResult ->  currentViewState.copy()
-                    is ItemClickedResult -> currentViewState.copy()
                     is Result.GetPodcastsResult -> {
                         val podcasts = result.packet.podcastsResponse
                         currentViewState.copy(itemList = podcasts.map { it.dto()})
-                    }
+                    } else -> currentViewState.copy(/*check diff*/)
                 }
             }
         }

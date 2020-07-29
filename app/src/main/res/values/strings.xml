@@ -5,4 +5,5 @@
     <string name="shows">Shows</string>
 
     <string name="listen_now">Listen Now</string>
+    <string name="unexpectedError">Unexpected error</string>
 </resources>

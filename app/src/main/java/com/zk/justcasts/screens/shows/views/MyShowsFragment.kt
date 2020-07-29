@@ -56,10 +56,9 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
         view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
-    private fun render(viewState: ViewState?) {
-        if (viewState == null) return // Ignore null values
+    private fun render(viewState: ViewState) {
         Log.d("Zivi", "----- viewState $viewState")
-        showsAdapter.update(viewState.itemList)
+        viewState.itemList?.let { showsAdapter.update(it) }
     }
 
     private fun trigger(effect: ViewEffect) {

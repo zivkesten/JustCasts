@@ -14,18 +14,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.zk.justcasts.R
 import com.zk.justcasts.databinding.ShowFragmentBinding
 import com.zk.justcasts.models.EpisodeDTO
+import com.zk.justcasts.presentation.extensions.loadImageForMaterialTransition
 import com.zk.justcasts.presentation.extensions.observe
+import com.zk.justcasts.presentation.extensions.setDebounceClickListener
+import com.zk.justcasts.screens.show.listUtils.EpisodesRecyclerViewAdapter
+import com.zk.justcasts.screens.show.listUtils.OnEpisodeClickListener
 import com.zk.justcasts.screens.show.model.Event
 import com.zk.justcasts.screens.show.model.ViewEffect
 import com.zk.justcasts.screens.show.model.ViewState
 import com.zk.justcasts.screens.show.viewModel.ShowViewModel
-import com.zk.justcasts.screens.show.listUtils.EpisodesRecyclerViewAdapter
-import com.zk.justcasts.screens.show.listUtils.OnEpisodeClickListener
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ShowFragment : Fragment(), OnEpisodeClickListener {
@@ -69,22 +69,14 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     private fun setupBinding() {
         binding.coordinator.transitionName = args.transitionName
-        binding.floatingActionButton.setOnClickListener { viewModel.onEvent(Event.AddToMyShows(args.data)) }
-        Picasso.get()
-            .load(args.data.image)
-            .into(binding.showCover, object: Callback {
-                override fun onSuccess() {
-                    startPostponedEnterTransition()
-                }
-
-                override fun onError(e: java.lang.Exception?) {
-                    startPostponedEnterTransition()
-                }
-            })
+        args.data.image?.let { loadImageForMaterialTransition(it, binding.showCover) }
         binding.collapsingToolbar.title = args.data.title
         binding.episodeList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = episodeAdapter
+        }
+        binding.floatingActionButton.setDebounceClickListener {
+            viewModel.onEvent(Event.AddToMyShows(args.data))
         }
     }
 
@@ -97,6 +89,8 @@ class ShowFragment : Fragment(), OnEpisodeClickListener {
 
     private fun render(state: ViewState) {
         state.episodes?.let { episodeAdapter.update(it) }
+        state.errorMessageResource?.let { Log.e("Zivi", "error: ${getString(it)}") }
+        state.errorMessage?.let { Log.e("Zivi", "error: $it)}") }
         Log.d("Zivi", "----- viewState $state")
     }
 

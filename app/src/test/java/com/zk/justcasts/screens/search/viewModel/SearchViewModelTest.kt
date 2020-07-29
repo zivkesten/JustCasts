@@ -3,15 +3,8 @@ package com.zk.justcasts.screens.search.viewModel
 import android.os.Build
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.core.view.ViewCompat
-import androidx.navigation.NavDirections
-import androidx.navigation.fragment.FragmentNavigator
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.google.common.truth.Fact
-import com.google.common.truth.FailureMetadata
-import com.google.common.truth.Subject
 import com.google.common.truth.Truth.assertThat
 import com.jraska.livedata.test
 import com.nhaarman.mockitokotlin2.times
@@ -25,12 +18,12 @@ import com.zk.justcasts.repository.Repository
 import com.zk.justcasts.screens.search.model.Event
 import com.zk.justcasts.screens.search.model.Result
 import com.zk.justcasts.screens.search.model.ViewEffect
-import com.zk.justcasts.screens.search.views.SearchFragmentDirections
-import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import org.junit.*
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.robolectric.annotation.Config
@@ -136,7 +129,7 @@ class SearchViewModelTest {
             .value().apply {
                 assertThat(searchResultList).isEqualTo(mockEmptyListOfPodcasts)
                 assertThat(searchText).isEqualTo(null)
-                assertThat(loadingStateVisibility).isEqualTo(View.VISIBLE)// prevents search box from reset
+                assertThat(loadingStateVisibility).isEqualTo(View.VISIBLE)
             }
     }
 

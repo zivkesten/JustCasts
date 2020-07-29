@@ -3,11 +3,9 @@ package com.zk.justcasts.screens.show.viewModel
 import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.zk.justcasts.R
 import com.zk.justcasts.models.EpisodeDTO
 import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.base.BaseViewModel
@@ -19,7 +17,6 @@ import com.zk.justcasts.screens.show.model.Result
 import com.zk.justcasts.screens.show.model.ViewEffect
 import com.zk.justcasts.screens.show.model.ViewState
 import com.zk.justcasts.screens.show.views.ShowFragmentDirections
-import com.zk.justcasts.screens.shows.views.MyShowsFragmentDirections
 import kotlinx.coroutines.launch
 
 class ShowViewModel(private val database: ShowsDatabase, private val repository: Repository) :
@@ -40,12 +37,16 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
     }
 
     private fun onScreenLoad(item: PodcastDTO) {
-        resultToViewEffect(Lce.Loading())
         resultToViewState(Lce.Loading())
+        try {
         viewModelScope.launch {
             val episodes = repository.getEpisodesASync(item.id)
             Log.d("Zivi", "episodes: $episodes")
-            resultToViewState(Lce.Content(Result.GetEpisodes(episodes)))
+            resultToViewState(Lce.Content(Result.LoadEpisodes(episodes)))
+        }
+        } catch (e: Exception) {
+            Log.e(ShowViewModel::class.java.simpleName, "Error loading users ${e.localizedMessage}")
+            resultToViewState(Lce.Error(Result.Error(e.localizedMessage)))
         }
     }
 
@@ -57,7 +58,6 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
     }
 
     private fun onAddToMyShows(item: PodcastDTO) {
-        resultToViewEffect(Lce.Loading())
         resultToViewState(Lce.Loading())
         viewModelScope.launch {
             val id = database.podcastDao().insert(item.entity())
@@ -69,7 +69,8 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
                 resultToViewEffect(lceOfResult)
                 resultToViewState(lceOfResult)
             } else {
-                val lceOfResult: Lce.Error<Result> = Lce.Error(result)
+                val r = Result.Error("Error adding to dataBase")
+                val lceOfResult: Lce.Error<Result> = Lce.Error(r)
                 resultToViewEffect(lceOfResult)
                 resultToViewState(lceOfResult)
             }
@@ -83,15 +84,19 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
         Log.d("Zivi", "----- result $result")
 
         currentViewState = when (result) {
-            is Lce.Loading -> currentViewState.copy(/*loading state*/)
-            is Lce.Error -> currentViewState.copy(/*error state with 'it'*/)
+            is Lce.Loading -> currentViewState.copy(loadingStateVisibility = View.VISIBLE)
+            is Lce.Error -> {
+                when (result.packet) {
+                    is Result.Error -> currentViewState.copy(errorMessage = result.packet.errorMessage)
+                    else -> currentViewState.copy(errorMessageResource = R.string.unexpectedError)
+                }
+            }
             is Lce.Content -> {
                 when (result.packet) {
-                    is Result.GetEpisodes -> currentViewState.copy(episodes = result.packet.episodes)
+                    is Result.LoadEpisodes -> currentViewState.copy(episodes = result.packet.episodes)
                     else -> currentViewState.copy()
                 }
             }
-
         }
     }
 

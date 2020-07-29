@@ -13,7 +13,10 @@ import com.zk.justcasts.repository.database.podcast.PodcastEntity
 
 
 data class ViewState (
-    val itemList: List<PodcastDTO> = emptyList()
+    val itemList: List<PodcastDTO>? = null,
+    val errorMessageResource: Int? = null,
+    val errorMessage: String? = null,
+    val loadingStateVisibility: Int? = View.GONE
 ): BaseViewState
 
 sealed class ViewEffect: BaseViewEffect {
@@ -29,7 +32,7 @@ sealed class Event: BaseEvent {
 }
 
 sealed class Result: BaseResult {
-    object ScreenLoadResult : Result()
+    data class Error(val errorMessage: String?): Result()
     data class GetPodcastsResult(val podcastsResponse: List<PodcastEntity>) : Result()
     data class ItemClickedResult(val item: PodcastDTO, val sharedElement: View) : Result()
 }

@@ -11,8 +11,9 @@ import com.zk.justcasts.presentation.base.BaseViewEffect
 import com.zk.justcasts.presentation.base.BaseViewState
 
 data class ViewState(val episodes: List<EpisodeDTO>? = null,
-                     val podcastTitle: String? = null,
-                     val podcastImage: String? = null
+                     val errorMessageResource: Int? = null,
+                     val errorMessage: String? = null,
+                     val loadingStateVisibility: Int? = View.GONE
 ): BaseViewState
 
 sealed class ViewEffect: BaseViewEffect {
@@ -30,6 +31,7 @@ sealed class Event: BaseEvent {
 sealed class Result: BaseResult {
     object ScreenLoad:  Result()
     data class ItemClickedResult(val item: EpisodeDTO, val sharedElement: View) : Result()
-    data class GetEpisodes(val episodes: List<EpisodeDTO>?): Result()
+    data class LoadEpisodes(val episodes: List<EpisodeDTO>?): Result()
     data class ShowAddToFavConfirmation(val podcastAdded: PodcastDTO) : Result()
+    data class Error(val errorMessage: String?): Result()
 }
