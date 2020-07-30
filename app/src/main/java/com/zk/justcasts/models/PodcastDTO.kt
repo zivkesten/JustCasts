@@ -2,8 +2,11 @@ package com.zk.justcasts.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import com.idanatz.oneadapter.external.interfaces.Diffable
 import com.zk.justcasts.repository.database.podcast.PodcastEntity
 import kotlinx.android.parcel.Parcelize
+import java.util.*
+import kotlin.random.Random
 
 @Parcelize
 data class PodcastDTO (
@@ -47,7 +50,13 @@ data class PodcastDTO (
     val explicit_content: Boolean? = null,
     @SerializedName("latest_pub_date_ms")
     val latest_pub_date_ms: Long? = null,
-    val errorMessage: String? = null): Parcelable, BaseDTO {
+    val errorMessage: String? = null): Parcelable, Diffable, BaseDTO {
+
+    override fun areContentTheSame(other: Any): Boolean {
+        return other is PodcastDTO && id == other.id
+    }
+
+    override fun getUniqueIdentifier() = UUID.randomUUID().mostSignificantBits
 
     override fun entity(): PodcastEntity {
         return PodcastEntity(id, rss, type, email, /*extra,*/ image, title, country,

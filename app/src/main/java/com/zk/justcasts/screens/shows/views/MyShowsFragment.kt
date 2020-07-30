@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
+import com.idanatz.oneadapter.OneAdapter
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
 import com.zk.justcasts.presentation.extensions.observe
+import com.zk.justcasts.screens.shows.listUtils.PodcastModule
 import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.ViewEffect
@@ -28,7 +30,7 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentMyShowsBinding
 
-    private val showsAdapter = PodcastsRecyclerViewAdapter()
+    private lateinit var oneAdapter: OneAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +60,7 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun render(viewState: ViewState) {
         Log.d("Zivi", "----- viewState $viewState")
-        viewState.itemList?.let { showsAdapter.update(it) }
+        viewState.itemList?.let { oneAdapter.setItems(it) }
     }
 
     private fun trigger(effect: ViewEffect) {
@@ -69,14 +71,10 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun setupBinding() {
+        oneAdapter = OneAdapter(binding.showsList)
+            .attachItemModule(PodcastModule())
         binding.swiperefresh.setOnRefreshListener(this)
-        binding.showsList.apply {
-            layoutManager = GridLayoutManager(context, 2)
-            showsAdapter.setDebounceClickListener { item, sharedElement ->
-                viewModel.onEvent(Event.ItemClicked(item, sharedElement))
-            }
-            adapter = showsAdapter
-        }
+        binding.showsList.layoutManager = GridLayoutManager(context, 2)
     }
 
     override fun onRefresh() {
