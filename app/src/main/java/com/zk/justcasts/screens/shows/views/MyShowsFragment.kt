@@ -5,16 +5,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.idanatz.oneadapter.OneAdapter
+import com.idanatz.oneadapter.external.event_hooks.ClickEventHook
+import com.idanatz.oneadapter.external.interfaces.Item
+import com.idanatz.oneadapter.internal.holders.ViewBinder
+import com.zk.justcasts.R
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
+import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.extensions.observe
 import com.zk.justcasts.screens.shows.listUtils.PodcastModule
 import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
@@ -71,13 +78,29 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun setupBinding() {
+        class PodcastClickHook : ClickEventHook<PodcastDTO>() {
+            override fun onClick(item: Item<PodcastDTO>, viewBinder: ViewBinder) {
+                Toast.makeText(viewBinder.rootView.context, "cliclk on ${item.model.title}", Toast.LENGTH_LONG).show()
+//            viewModel.onEvent(
+//                Event.ItemClicked(
+//                    item.model,
+//                    viewBinder.findViewById<MaterialCardView>(R.id.show_card)))
+            }
+        }
+        val click = PodcastClickHook()
+        val module = PodcastModule()
+        module.addEventHook(click)
         oneAdapter = OneAdapter(binding.showsList)
             .attachItemModule(PodcastModule())
-        binding.swiperefresh.setOnRefreshListener(this)
+
+                    binding.swiperefresh.setOnRefreshListener(this)
         binding.showsList.layoutManager = GridLayoutManager(context, 2)
     }
 
     override fun onRefresh() {
         viewModel.onEvent(Event.SwipeToRefreshEvent)
     }
+
+
+
 }
