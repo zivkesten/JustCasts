@@ -107,8 +107,10 @@ class ShowViewModel(private val database: ShowsDatabase, private val repository:
                 when (result.packet)  {
                     is Result.ShowAddToFavConfirmation -> effect = ViewEffect.ShowAddToFavConfirmation(result.packet.podcastAdded)
                     is Result.ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
+                    else -> Unit// TODO: Handle
                 }
             }
+            else -> Unit// TODO: Handle
         }
         Log.d("Zivi", "resultToViewEffect $effect")
         viewEffectLD.value = effect

@@ -3,9 +3,7 @@ package com.zk.justcasts.models
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.zk.justcasts.repository.database.podcast.PodcastEntity
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
 data class PodcastResponse (
     @SerializedName("id")
     val id: String? = null,
@@ -47,7 +45,7 @@ data class PodcastResponse (
     val explicit_content: Boolean? = null,
     @SerializedName("latest_pub_date_ms")
     val latest_pub_date_ms: Long? = null,
-    val errorMessage: String? = null): Parcelable, BaseDTO {
+    val errorMessage: String? = null):  BaseDTO {
 
     override fun entity(): PodcastEntity {
         return PodcastEntity(id?: "", rss, type, email, /*extra,*/ image, title, country,

@@ -94,6 +94,7 @@ class SearchViewModel(val repository: Repository)
                     is Result.ItemClickedResult -> itemClickToViewEffect(result.packet)
                 }
             }
+            else -> Unit// TODO: Handle
         }
         Log.d("Zivi", "resultToViewEffect $effect")
         viewEffectLD.value = effect

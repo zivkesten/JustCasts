@@ -2,9 +2,7 @@ package com.zk.justcasts.models
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import com.zk.justcasts.repository.database.podcast.PodcastEntity
-import kotlinx.android.parcel.Parcelize
-
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class EpisodeDTO (
@@ -35,4 +33,4 @@ data class EpisodeDTO (
     @SerializedName("listennotes_edit_url")
     val listenNotesEditUrl: String? = null,
     @SerializedName("Error") val errorMessage: String? = null
-): Parcelable
+) : Parcelable

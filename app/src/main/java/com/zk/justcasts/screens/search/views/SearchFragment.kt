@@ -67,6 +67,7 @@ class SearchFragment: Fragment() {
     private fun trigger(effect: ViewEffect) {
         when(effect) {
             is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
+            else -> Unit // TODO: Handle
         }
     }
 

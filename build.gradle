@@ -1,15 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlinVersion = "1.3.72"
-    ext.navVersion = "2.3.0"
+    ext.kotlinVersion = '1.9.0'
+    ext.navVersion = '2.5.0'
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
 
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navVersion"
-        classpath "com.android.tools.build:gradle:4.0.1"
+        classpath 'com.android.tools.build:gradle:8.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -20,11 +20,11 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
 
@@ -32,9 +32,9 @@ task clean(type: Delete) {
 ext {
     // Sdk and tools
     // Support library and architecture components support minSdk 14 and above.
-    minSdkVersion = 21
+    minSdkVersion = 28
     targetSdkVersion = 28
-    compileSdkVersion = 28
+    compileSdkVersion = 34
 
     // App dependencies
     retrofitVersion = '2.9.0'
@@ -42,7 +42,7 @@ ext {
     androidXTestExtKotlinRunnerVersion = '1.1.1'
     androidXLegacyVersion = '1.0.0'
     androidXLifecycleExtensionVersion = '2.2.0'
-    androidXLifecycleViewmodelVersion = '2.2.0'
+    androidXLifecycleViewmodelVersion = '2.6.2'
     appCompatVersion = '1.0.2'
     archTestingVersion = '2.1.0'
     espressoVersion = '3.2.0'
@@ -52,15 +52,15 @@ ext {
     kotlinJunit = '1.1.1'
     robolectricVersion = '4.3.1'
     truthVersion = '1.0.1'
-    constraintlayoutVersion = '1.1.3'
-    coordinatorlayoutVersion = '1.1.0'
-    materialVersion = '1.3.0-alpha01'
-    navigationFragmentVersion ='2.3.0'
-    navigationUIVersion ='2.3.0'
-    koinVersion = '2.1.5'
+    constraintlayoutVersion = '2.1.4'
+    coordinatorlayoutVersion = '1.2.0'
+    materialVersion = '1.11.0'
+    navigationFragmentVersion ='2.7.6'
+    navigationUIVersion ='2.7.6'
+    koinVersion = '3.5.3'
     logInterceptorVersion = '4.7.2'
     picassoVersion = '2.71828'
-    roomVersion = '2.2.5'
+    roomVersion = '2.6.1'
     mockitokotlinVersion = '2.2.0'
     mockitoInlineVersion = '3.1.0'
     liveDataTestVersion = '1.1.2'

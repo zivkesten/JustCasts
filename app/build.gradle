@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-parcelize'
 
 android {
     compileSdkVersion rootProject.compileSdkVersion
@@ -10,7 +10,6 @@ android {
 
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
-    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.zk.justcasts"
@@ -63,7 +62,20 @@ android {
             buildConfigField "String", "API_KEY", "\"d4048898e8f34fdc90d72d53475d1bd7\""
         }
     }
+    namespace 'com.zk.justcasts'
+    buildFeatures {
+        buildConfig true
+    }
 }
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+        force 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+        // Add other lifecycle components here if necessary
+    }
+}
+
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -84,11 +96,10 @@ dependencies {
     implementation "com.google.android.material:material:$materialVersion"
 
     //Koin
-    implementation "org.koin:koin-androidx-fragment:$koinVersion"
-    implementation "org.koin:koin-androidx-scope:$koinVersion"
-    implementation "org.koin:koin-android:$koinVersion"
-    implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
-    implementation "org.koin:koin-core:$koinVersion"
+    implementation "io.insert-koin:koin-core:$koinVersion"
+    implementation "io.insert-koin:koin-android:$koinVersion"
+
+
 
     //Networking
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
@@ -133,8 +144,5 @@ dependencies {
 
     //Roboelectric
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
-
-    //OneAdapter
-    implementation "com.ironsource.aura.oneadapter:oneadapter:$oneAdapterVersion"
 
 }

@@ -15,15 +15,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
-import com.idanatz.oneadapter.OneAdapter
-import com.idanatz.oneadapter.external.event_hooks.ClickEventHook
-import com.idanatz.oneadapter.external.interfaces.Item
-import com.idanatz.oneadapter.internal.holders.ViewBinder
 import com.zk.justcasts.R
 import com.zk.justcasts.databinding.FragmentMyShowsBinding
 import com.zk.justcasts.models.PodcastDTO
 import com.zk.justcasts.presentation.extensions.observe
-import com.zk.justcasts.screens.shows.listUtils.PodcastModule
 import com.zk.justcasts.screens.shows.listUtils.PodcastsRecyclerViewAdapter
 import com.zk.justcasts.screens.shows.model.Event
 import com.zk.justcasts.screens.shows.model.ViewEffect
@@ -37,7 +32,7 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var binding: FragmentMyShowsBinding
 
-    private lateinit var oneAdapter: OneAdapter
+   // private lateinit var oneAdapter: OneAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,33 +62,36 @@ class MyShowsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun render(viewState: ViewState) {
         Log.d("Zivi", "----- viewState $viewState")
-        viewState.itemList?.let { oneAdapter.setItems(it) }
+        viewState.itemList?.let {
+           // oneAdapter.setItems(it)
+        }
     }
 
     private fun trigger(effect: ViewEffect) {
         when(effect) {
             is ViewEffect.ShowVisualResultForAddToFavourites ->  Snackbar.make(binding.showsCoordinator, effect.message, Snackbar.LENGTH_LONG).show()
             is ViewEffect.TransitionToScreenWithElement ->  view?.findNavController()?.navigate(effect.direction, effect.extras)
+            else -> Unit// TODO: Handle
         }
     }
 
     private fun setupBinding() {
-        class PodcastClickHook : ClickEventHook<PodcastDTO>() {
-            override fun onClick(item: Item<PodcastDTO>, viewBinder: ViewBinder) {
-                Toast.makeText(viewBinder.rootView.context, "cliclk on ${item.model.title}", Toast.LENGTH_LONG).show()
-//            viewModel.onEvent(
-//                Event.ItemClicked(
-//                    item.model,
-//                    viewBinder.findViewById<MaterialCardView>(R.id.show_card)))
-            }
-        }
-        val click = PodcastClickHook()
-        val module = PodcastModule()
-        module.addEventHook(click)
-        oneAdapter = OneAdapter(binding.showsList)
-            .attachItemModule(PodcastModule())
-
-                    binding.swiperefresh.setOnRefreshListener(this)
+//        class PodcastClickHook : ClickEventHook<PodcastDTO>() {
+//            override fun onClick(item: Item<PodcastDTO>, viewBinder: ViewBinder) {
+//                Toast.makeText(viewBinder.rootView.context, "cliclk on ${item.model.title}", Toast.LENGTH_LONG).show()
+////            viewModel.onEvent(
+////                Event.ItemClicked(
+////                    item.model,
+////                    viewBinder.findViewById<MaterialCardView>(R.id.show_card)))
+//            }
+//        }
+//        val click = PodcastClickHook()
+//        val module = PodcastModule()
+    //    module.addEventHook(click)
+//        oneAdapter = OneAdapter(binding.showsList)
+//            .attachItemModule(PodcastModule())
+//
+//                    binding.swiperefresh.setOnRefreshListener(this)
         binding.showsList.layoutManager = GridLayoutManager(context, 2)
     }
 

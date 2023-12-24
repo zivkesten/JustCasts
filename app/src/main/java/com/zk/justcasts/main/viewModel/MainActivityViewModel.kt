@@ -23,6 +23,7 @@ class MainActivityViewModel: ViewModel() {
     fun event(event: Event) {
         when (event) {
             is Event.Navigation ->  onNavigationEvent(event)
+            else -> Unit// TODO: Handle
         }
     }
 

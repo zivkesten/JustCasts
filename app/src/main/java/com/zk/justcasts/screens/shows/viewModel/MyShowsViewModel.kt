@@ -87,8 +87,12 @@ class MyShowsViewModel(private val dataBase: ShowsDatabase):
             is Lce.Content -> {
                 when (result.packet)  {
                     is ItemClickedResult -> effect = itemClickToViewEffect(result.packet)
+                    else -> Unit// TODO: Handle
                 }
+
             }
+
+            else -> Unit// TODO: Handle
         }
         viewEffectLD.value = effect
     }
